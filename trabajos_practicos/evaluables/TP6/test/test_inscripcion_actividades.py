@@ -22,9 +22,13 @@ def test_inscribir_actividad_con_talle_pasa(mocker):
     mock_conn = mocker.patch("sqlite3.connect")
     mock_cursor = mock_conn.return_value.cursor.return_value
 
+    # 🔹 Parsear fecha_actual y hora_actual para crear objeto datetime
+    dia, mes, anio = map(int, fecha_actual.split("-"))
+    hora, minuto, segundo = map(int, hora_actual.split(":"))
+
     # 🔹 Mock de datetime.datetime.now() - devuelve un objeto datetime real
     mock_datetime = mocker.patch("src.inscripcion_actividad.datetime")
-    mock_datetime.datetime.now.return_value = datetime.datetime(2025, 10, 17, 12, 0, 0)
+    mock_datetime.datetime.now.return_value = datetime.datetime(anio, mes, dia, hora, minuto, segundo)
     mock_datetime.datetime.side_effect = lambda *args, **kwargs: datetime.datetime(*args, **kwargs)
 
     # 🔹 Simular fetchone() secuencial:
@@ -71,8 +75,12 @@ def test_inscribir_actividad_sin_talle_requerido_pasa(mocker):
     mock_conn = mocker.patch("sqlite3.connect")
     mock_cursor = mock_conn.return_value.cursor.return_value
 
+    # 🔹 Parsear fecha_actual y hora_actual para crear objeto datetime
+    dia, mes, anio = map(int, fecha_actual.split("-"))
+    hora, minuto, segundo = map(int, hora_actual.split(":"))
+
     mock_datetime = mocker.patch("src.inscripcion_actividad.datetime")
-    mock_datetime.datetime.now.return_value = datetime.datetime(2025, 10, 17, 12, 0, 0)
+    mock_datetime.datetime.now.return_value = datetime.datetime(anio, mes, dia, hora, minuto, segundo)
     mock_datetime.datetime.side_effect = lambda *args, **kwargs: datetime.datetime(*args, **kwargs)
 
     mock_cursor.fetchone.side_effect = [
@@ -117,8 +125,12 @@ def test_inscribir_actividad_sin_cupos_disponibles_falla(mocker):
     mock_conn = mocker.patch("sqlite3.connect")
     mock_cursor = mock_conn.return_value.cursor.return_value
 
+    # 🔹 Parsear fecha_actual y hora_actual para crear objeto datetime
+    dia, mes, anio = map(int, fecha_actual.split("-"))
+    hora, minuto, segundo = map(int, hora_actual.split(":"))
+
     mock_datetime = mocker.patch("src.inscripcion_actividad.datetime")
-    mock_datetime.datetime.now.return_value = datetime.datetime(2025, 10, 17, 12, 0, 0)
+    mock_datetime.datetime.now.return_value = datetime.datetime(anio, mes, dia, hora, minuto, segundo)
     mock_datetime.datetime.side_effect = lambda *args, **kwargs: datetime.datetime(*args, **kwargs)
 
     # 🔹 Simulamos que la actividad "Palestra" tiene solo 2 cupos disponibles
@@ -162,8 +174,12 @@ def test_inscribir_actividad_con_talle_requerido_con_talle_invalido_falla(mocker
     mock_conn = mocker.patch("sqlite3.connect")
     mock_cursor = mock_conn.return_value.cursor.return_value
 
+    # 🔹 Parsear fecha_actual y hora_actual para crear objeto datetime
+    dia, mes, anio = map(int, fecha_actual.split("-"))
+    hora, minuto, segundo = map(int, hora_actual.split(":"))
+
     mock_datetime = mocker.patch("src.inscripcion_actividad.datetime")
-    mock_datetime.datetime.now.return_value = datetime.datetime(2025, 10, 17, 12, 0, 0)
+    mock_datetime.datetime.now.return_value = datetime.datetime(anio, mes, dia, hora, minuto, segundo)
     mock_datetime.datetime.side_effect = lambda *args, **kwargs: datetime.datetime(*args, **kwargs)
 
     mock_cursor.fetchone.side_effect = [
