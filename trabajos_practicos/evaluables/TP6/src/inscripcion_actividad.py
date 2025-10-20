@@ -2,7 +2,9 @@ import datetime
 import sqlite3
 
 
-def inscribir_actividad(actividad, fecha_actividad, horario_actividad, personas, acepta_terminos_condiciones):
+def inscribir_actividad(
+        actividad, fecha_actividad, horario_actividad, personas,
+        acepta_terminos_condiciones):
     if not acepta_terminos_condiciones:
         raise ValueError("Se deben aceptar los terminos y condiciones")
 
@@ -10,31 +12,38 @@ def inscribir_actividad(actividad, fecha_actividad, horario_actividad, personas,
     fecha_hora_actual = datetime.datetime.now()
 
     # Parsear la fecha de la actividad
-    dia_actividad, mes_actividad, anio_actividad = (int(fecha) for fecha in fecha_actividad.split("-"))
-    hora_actividad, minutos_actividad = (int(horario) for horario in horario_actividad.split(":"))
+    dia_actividad, mes_actividad, anio_actividad = (
+        int(fecha) for fecha in fecha_actividad.split("-"))
+    hora_actividad, minutos_actividad = (
+        int(horario) for horario in horario_actividad.split(":"))
 
     # Crear objeto datetime para la actividad
-    fecha_hora_actividad = datetime.datetime(anio_actividad, mes_actividad, dia_actividad, hora_actividad,
-                                             minutos_actividad)
+    fecha_hora_actividad = datetime.datetime(
+        anio_actividad, mes_actividad, dia_actividad, hora_actividad,
+        minutos_actividad)
 
     # Validación de que la actividad no haya sucedido
     if fecha_hora_actividad < fecha_hora_actual:
         raise ValueError("No se puede inscribir a actividades ya realizadas")
 
     # Validación de anticipación máxima de 2 días
-    diferencia_dias = (fecha_hora_actividad.date() - fecha_hora_actual.date()).days
+    diferencia_dias = (fecha_hora_actividad.date() -
+                       fecha_hora_actual.date()).days
 
     if diferencia_dias > 2:
-        raise ValueError("No se puede inscribir a una actividad con más de dos dias de anticipacion")
+        raise ValueError(
+            "No se puede inscribir a una actividad con más de dos dias de "
+            "anticipacion")
 
     conn = sqlite3.connect('../data/parque.db')
     cursor = conn.cursor()
 
-    # busca el id del horario, id de la actividad y cupos disponibles para esa actividad en ese horario
+    # busca id de horario, id de actividad y cupos disponibles
+    # para esa actividad en ese horario
     cursor.execute("""
     SELECT A.id, H.id, AXH.cupos_disponibles
-    FROM ACTIVIDAD_X_HORARIO AXH 
-    join ACTIVIDAD A on A.id = AXH.id_actividad 
+    FROM ACTIVIDAD_X_HORARIO AXH
+    join ACTIVIDAD A on A.id = AXH.id_actividad
     join HORARIOS H on AXH.id_horario = H.id
     WHERE A.nombre = ? AND AXH.fecha = ? AND H.hora = ?
     """, (actividad, fecha_actividad, horario_actividad))
@@ -48,16 +57,20 @@ def inscribir_actividad(actividad, fecha_actividad, horario_actividad, personas,
     cupos_actualizados = cupos_disponibles - len(personas)
 
     if cupos_actualizados < 0:
-        raise ValueError("No hay cupos suficientes para inscribir a todas las personas.")
+        raise ValueError(
+            "No hay cupos suficientes para inscribir a todas las personas.")
 
     cursor.execute("""
-        UPDATE ACTIVIDAD_X_HORARIO AXH 
-        SET cupos_disponibles = ? 
+        UPDATE ACTIVIDAD_X_HORARIO AXH
+        SET cupos_disponibles = ?
         WHERE AXH.id_actividad = ? AND AXH.id_horario = ? AND AXH.fecha = ?
         """, (cupos_actualizados, id_actividad, id_horario, fecha_actividad))
 
     for persona in personas:
-        if (actividad == "Palestra" and persona["edad"] < 12 or actividad == "Tirolesa" and persona["edad"] < 8):
+        es_palestra = (actividad == "Palestra" and persona["edad"] < 12)
+        es_tirolesa = (actividad == "Tirolesa" and persona["edad"] < 8)
+
+        if es_palestra or es_tirolesa:
             raise ValueError("no cumple con la edad mínima")
         if actividad in ("Palestra", "Tirolesa"):
             cursor.execute("""
@@ -70,15 +83,23 @@ def inscribir_actividad(actividad, fecha_actividad, horario_actividad, personas,
                 raise ValueError("Talle de persona invalido")
 
             cursor.execute("""
-            INSERT INTO INSCRIPCION (id_actividad, id_horario, fecha, dni, id_talla) 
+            INSERT INTO INSCRIPCION (
+                id_actividad, id_horario, fecha, dni, id_talla
+            )
             VALUES (?, ?, ?, ?, ?)
-            """, (id_actividad, id_horario, fecha_actividad, persona["dni"], id_talle[0]))
+            """, (
+                id_actividad, id_horario, fecha_actividad,
+                persona["dni"], id_talle[0]))
 
         else:
             cursor.execute("""
-                        INSERT INTO INSCRIPCION (id_actividad, id_horario, fecha, dni) 
-                        VALUES (?, ?, ?, ?)
-                        """, (id_actividad, id_horario, fecha_actividad, persona["dni"]))
+            INSERT INTO INSCRIPCION (
+                id_actividad, id_horario, fecha, dni
+            )
+            VALUES (?, ?, ?, ?)
+            """, (
+                id_actividad, id_horario, fecha_actividad,
+                persona["dni"]))
     conn.commit()
     cursor.close()
 
