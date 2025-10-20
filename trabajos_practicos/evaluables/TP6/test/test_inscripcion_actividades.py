@@ -314,3 +314,27 @@ def test_inscribir_actividad_ya_realizada_falla(mocker, fecha_actual, hora_actua
 
     # 🔹 Verificar que NO se realizaron commits
     assert mock_conn.return_value.commit.call_count == 0
+
+def test_inscribir_actividad_mas_de_dos_dias_antes_falla(mocker):
+    fecha_actual = "17-10-2025"
+    hora_actual = "12:00:00"
+    fecha_actividad = "20-10-2025"
+    horario_actividad = "16:00"
+    actividad = "Palestra"
+    personas = [
+        {"dni": 100000, "nombre": "Juan Perez", "edad": 18, "talle": "M"},
+        {"dni": 100001, "nombre": "Maria Perez", "edad": 20, "talle": "S"},
+        {"dni": 100002, "nombre": "Pepito", "edad": 15, "talle": "L"}
+    ]
+    acepta_terminos_condiciones = True
+
+    # 🔹 Mock de conexión y cursor
+    mock_conn = mocker.patch("sqlite3.connect")
+    mock_cursor = mock_conn.return_value.cursor.return_value
+    mock_datetime = mocker.patch("src.inscripcion_actividad.datetime")
+    mock_now = mocker.Mock()
+    mock_now.strftime.return_value = f"{fecha_actual} {hora_actual}"
+    mock_datetime.datetime.now.return_value = mock_now
+
+    with pytest.raises(ValueError, match="No se puede inscribir a una actividad con más de dos dias de anticipacion"):
+        inscribir_actividad(actividad, fecha_actividad, horario_actividad, personas, acepta_terminos_condiciones)
