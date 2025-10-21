@@ -35,18 +35,23 @@ def inscribir_actividad(
             "No se puede inscribir a una actividad con más de dos dias de "
             "anticipacion")
 
-    conn = sqlite3.connect('../data/parque.db')
+    conn = sqlite3.connect('data/parque.db')
     cursor = conn.cursor()
+    #Validacion de que todos los datos de las personas esten cargados sin tener en cuenta la talla
+    for persona in personas:
+        if not all([persona.get("dni"), persona.get("nombre"), persona.get("edad")]):
+            raise ValueError("Los datos de la persona están incompletos")
 
-    # busca id de horario, id de actividad y cupos disponibles
-    # para esa actividad en ese horario
+    # busca el id del horario, id de la actividad y cupos disponibles para esa actividad en ese horario
     cursor.execute("""
     SELECT A.id, H.id, AXH.cupos_disponibles
-    FROM ACTIVIDAD_X_HORARIO AXH
-    join ACTIVIDAD A on A.id = AXH.id_actividad
+    FROM ACTIVIDADES_X_HORARIOS AXH 
+    join ACTIVIDADES A on A.id = AXH.id_actividad 
     join HORARIOS H on AXH.id_horario = H.id
     WHERE A.nombre = ? AND AXH.fecha = ? AND H.hora = ?
     """, (actividad, fecha_actividad, horario_actividad))
+
+    print("paso")
 
     row = cursor.fetchone()
 
@@ -61,11 +66,11 @@ def inscribir_actividad(
             "No hay cupos suficientes para inscribir a todas las personas.")
 
     cursor.execute("""
-        UPDATE ACTIVIDAD_X_HORARIO AXH
-        SET cupos_disponibles = ?
-        WHERE AXH.id_actividad = ? AND AXH.id_horario = ? AND AXH.fecha = ?
-        """, (cupos_actualizados, id_actividad, id_horario, fecha_actividad))
-
+    UPDATE ACTIVIDADES_X_HORARIOS
+    SET cupos_disponibles = ? 
+    WHERE id_actividad = ? AND id_horario = ? AND fecha = ?
+    """, (cupos_actualizados, id_actividad, id_horario, fecha_actividad))
+    print("paso2")
     for persona in personas:
         es_palestra = (actividad == "Palestra" and persona["edad"] < 12)
         es_tirolesa = (actividad == "Tirolesa" and persona["edad"] < 8)
@@ -74,7 +79,7 @@ def inscribir_actividad(
             raise ValueError("no cumple con la edad mínima")
         if actividad in ("Palestra", "Tirolesa"):
             cursor.execute("""
-            SELECT id FROM TALLA
+            SELECT id FROM TALLAS
             WHERE nombre = ?""", (persona["talle"],))
 
             id_talle = cursor.fetchone()
@@ -83,24 +88,17 @@ def inscribir_actividad(
                 raise ValueError("Talle de persona invalido")
 
             cursor.execute("""
-            INSERT INTO INSCRIPCION (
-                id_actividad, id_horario, fecha, dni, id_talla
-            )
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO INSCRIPCIONES (id_actividad, id_horario, fecha, dni, id_talla, nombre_visitante) 
+            VALUES (?, ?, ?, ?, ?, ?)
             """, (
                 id_actividad, id_horario, fecha_actividad,
-                persona["dni"], id_talle[0]))
+                persona["dni"], id_talle[0], persona["talle"],))
 
         else:
             cursor.execute("""
-            INSERT INTO INSCRIPCION (
-                id_actividad, id_horario, fecha, dni
-            )
-            VALUES (?, ?, ?, ?)
-            """, (
-                id_actividad, id_horario, fecha_actividad,
-                persona["dni"]))
+                        INSERT INTO INSCRIPCIONES (id_actividad, id_horario, fecha, dni, nombre_visitante) 
+                        VALUES (?, ?, ?, ?, ?)
+                        """, (id_actividad, id_horario, fecha_actividad, persona["dni"], persona["nombre"]))
     conn.commit()
     cursor.close()
-
     print(row)

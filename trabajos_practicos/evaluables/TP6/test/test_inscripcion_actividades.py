@@ -56,10 +56,9 @@ def test_inscribir_actividad_con_talle_pasa(mocker):
     )
 
     # 🔹 Verificar que se insertaron inscripciones
-    insert_calls = [
-        c for c in mock_cursor.execute.call_args_list
-        if "INSERT INTO INSCRIPCION" in str(c)
-    ]
+
+    insert_calls = [c for c in mock_cursor.execute.call_args_list if "INSERT INTO INSCRIPCIONES" in str(c)]
+
     assert len(insert_calls) == len(personas)
 
     # 🔹 Verificar que se actualizan los cupos
@@ -124,10 +123,8 @@ def test_inscribir_actividad_sin_talle_requerido_pasa(mocker):
     )
 
     # 🔹 Verificar que se insertaron inscripciones
-    insert_calls = [
-        c for c in mock_cursor.execute.call_args_list
-        if "INSERT INTO INSCRIPCION" in str(c)
-    ]
+    insert_calls = [c for c in mock_cursor.execute.call_args_list if "INSERT INTO INSCRIPCIONES" in str(c)]
+
     assert len(insert_calls) == len(personas)
 
     # 🔹 Verificar que se hizo commit
@@ -471,16 +468,41 @@ def test_inscribir_actividad_mas_de_dos_dias_antes_falla(mocker):
         lambda *args, **kwargs: datetime.datetime(*args, **kwargs)
     )
 
-    # Corrección: Partir el string del 'match' para que no supere los 79 chars
-    match_string = (
-        "No se puede inscribir a una actividad con más de dos dias "
-        "de anticipacion"
-    )
-    with pytest.raises(ValueError, match=match_string):
-        inscribir_actividad(
-            actividad,
-            fecha_actividad,
-            horario_actividad,
-            personas,
-            acepta_terminos_condiciones
-        )
+    with pytest.raises(ValueError, match="No se puede inscribir a una actividad con más de dos dias de anticipacion"):
+        inscribir_actividad(actividad, fecha_actividad, horario_actividad, personas, acepta_terminos_condiciones)
+
+@pytest.mark.parametrize("personas", [
+    [{"dni": None, "nombre": "Juan Perez", "edad": 18, "talle": "M"}],
+    [{"dni": 100000, "nombre": None, "edad": 18, "talle": "M"}],
+    [{"dni": 100000, "nombre": "Juan Perez", "edad": None, "talle": "M"}]# actividad realizada un minuto antes
+])
+def test_inscribir_actividad_sin_campos_persona_completos_falla(mocker, personas):
+    fecha_actual = "17-10-2025"
+    hora_actual = "12:00:00"
+
+    fecha_actividad = "19-10-2025"
+    horario_actividad = "16:00"
+
+    acepta_terminos_condiciones = True
+    actividad = "Palestra"
+
+    mock_conn = mocker.patch("sqlite3.connect")
+    mock_cursor = mock_conn.return_value.cursor.return_value
+
+    # Parsear la fecha actual del test
+    dia, mes, anio = map(int, fecha_actual.split("-"))
+    hora, minuto, segundo = map(int, hora_actual.split(":"))
+
+    mock_datetime = mocker.patch("src.inscripcion_actividad.datetime")
+    mock_datetime.datetime.now.return_value = datetime.datetime(anio, mes, dia, hora, minuto, segundo)
+    mock_datetime.datetime.side_effect = lambda *args, **kwargs: datetime.datetime(*args, **kwargs)
+
+
+    with pytest.raises(ValueError, match="Los datos de la persona están incompletos"):
+        inscribir_actividad(actividad, fecha_actividad, horario_actividad, personas, acepta_terminos_condiciones)
+
+    # 🔹 Verificar que NO se realizaron commits
+    assert mock_conn.return_value.commit.call_count == 0
+
+
+

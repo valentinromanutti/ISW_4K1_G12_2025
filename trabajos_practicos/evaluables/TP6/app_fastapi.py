@@ -60,6 +60,8 @@ def handle_inscripcion(request_data: InscripcionRequest):
     # lo que espera la función.
     personas_dict = [p.dict() for p in request_data.personas]
 
+
+
     # 2. Llamar a la lógica de negocio
     try:
         # La función inscribir_actividad se encarga de toda la
@@ -73,8 +75,7 @@ def handle_inscripcion(request_data: InscripcionRequest):
         )
 
         # Respuesta exitosa
-        return {"mensaje": "Inscripción realizada con éxito.",
-                "datos": resultado}
+        return {"mensaje": "Inscripción realizada con éxito."}
 
     except ValueError as e:
         # Errores de validación de negocio (capturados de la función)
