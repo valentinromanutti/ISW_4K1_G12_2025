@@ -35,8 +35,7 @@ def inscribir_actividad(
 
     if diferencia_dias > 2:
         raise ValueError(
-            "No se puede inscribir a una actividad con más de dos dias de "
-            "anticipacion")
+            "No se puede inscribir a una actividad con más de dos dias de anticipacion")
 
     # Validación de que todos los datos de las personas esten cargados
     for persona in personas:

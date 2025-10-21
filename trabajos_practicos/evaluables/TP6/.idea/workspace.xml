@@ -5,10 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0aa61f3e-403f-4cef-8cd1-11727e2caf1e" name="Changes" comment="inscripcion a actividades pasa todos los test">
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app_fastapi.py" beforeDir="false" afterPath="$PROJECT_DIR$/app_fastapi.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/parque.db" beforeDir="false" afterPath="$PROJECT_DIR$/data/parque.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/inscripcion_actividad.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/inscripcion_actividad.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test_inscripcion_actividades.py" beforeDir="false" afterPath="$PROJECT_DIR$/test/test_inscripcion_actividades.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
