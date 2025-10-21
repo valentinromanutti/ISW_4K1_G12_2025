@@ -12,16 +12,19 @@ from PyQt6.QtGui import QFont, QTextCharFormat, QColor, QPalette
 # ----------------------------------------
 # FUNCIÓN LÓGICA DE INSCRIPCIÓN (validaciones)
 # ----------------------------------------
-def inscribir_actividad(actividad, fecha_actividad, horario_actividad, personas, acepta_terminos_condiciones):
+def inscribir_actividad(
+        actividad, fecha_actividad, horario_actividad, personas,
+        acepta_terminos_condiciones):
     if not acepta_terminos_condiciones:
         raise ValueError("Se deben aceptar los terminos y condiciones")
 
     try:
         fecha_actividad_dt = datetime.strptime(fecha_actividad, "%d-%m-%Y")
-        fecha_actual_dt = datetime.strptime(datetime.now().strftime("%d-%m-%Y"), "%d-%m-%Y")
+        fecha_actual_dt = datetime.strptime(
+            datetime.now().strftime("%d-%m-%Y"), "%d-%m-%Y")
     except Exception:
         raise ValueError("Formato de fecha inválido")
-    
+
     if fecha_actividad_dt.day == 25 and fecha_actividad_dt.month == 12:
         raise ValueError("No se permiten inscripciones en Navidad.")
     if fecha_actividad_dt.day == 1 and fecha_actividad_dt.month == 1:
@@ -31,12 +34,11 @@ def inscribir_actividad(actividad, fecha_actividad, horario_actividad, personas,
         raise ValueError("No se puede inscribir a actividades ya realizadas")
 
     if fecha_actividad_dt > fecha_actual_dt + timedelta(days=2):
-        raise ValueError("No se puede inscribir con mas de dos dias de anticipacion")
+        raise ValueError(
+            "No se puede inscribir con mas de dos dias de anticipacion")
 
     if fecha_actividad_dt.weekday() == 0:
         raise ValueError("No se permiten inscripciones los lunes.")
-
-    
 
     try:
         hora, minuto = map(int, horario_actividad.split(":"))
@@ -55,9 +57,11 @@ def inscribir_actividad(actividad, fecha_actividad, horario_actividad, personas,
     for persona in personas:
         edad_minima = {"Palestra": 12, "Tirolesa": 8}.get(actividad, 0)
         if persona["edad"] < edad_minima:
-            raise ValueError(f"La edad mínima para {actividad} es {edad_minima} años.")
+            raise ValueError(
+                f"La edad mínima para {actividad} es {edad_minima} años.")
         if actividad in ["Palestra", "Tirolesa"] and not persona.get("talle"):
-            raise ValueError(f"El talle es obligatorio para la actividad {actividad}.")
+            raise ValueError(
+                f"El talle es obligatorio para la actividad {actividad}.")
 
     return "Inscripción realizada correctamente."
 
@@ -88,35 +92,72 @@ class TerminosDialog(QDialog):
             }
         """)
 
-        texto.setText("""Términos y Condiciones de Participación en Actividades
+        texto.setText("""
+Términos y Condiciones de Participación en Actividades
 
-Al inscribirte en una actividad del parque, confirmás que comprendés y aceptás los siguientes términos y condiciones de participación.
+Al inscribirte en una actividad del parque, confirmás que comprendés y
+aceptás los siguientes términos y condiciones de participación.
 
-La inscripción será válida únicamente para las actividades habilitadas dentro del listado oficial del parque, que incluye Tirolesa, Safari, Palestra y Jardinería. Cada una de ellas cuenta con cupos limitados por horario, por lo que la reserva quedará confirmada solamente si existen lugares disponibles al momento de realizar la inscripción. No se podrán realizar cambios de horario una vez confirmada la participación.
+La inscripción será válida únicamente para las actividades habilitadas
+dentro del listado oficial del parque, que incluye Tirolesa, Safari,
+Palestra y Jardinería. Cada una de ellas cuenta con cupos limitados por
+horario, por lo que la reserva quedará confirmada solamente si existen
+lugares disponibles al momento de realizar la inscripción. No se podrán
+realizar cambios de horario una vez confirmada la participación.
 
-Durante el proceso de inscripción deberás ingresar correctamente los datos personales de cada participante, incluyendo nombre completo, DNI, edad y, en caso de que la actividad lo requiera, la talla de vestimenta correspondiente. Es responsabilidad del visitante proporcionar información veraz y actualizada, ya que la organización no se hará responsable por errores o inconvenientes ocasionados por datos incorrectos.
+Durante el proceso de inscripción deberás ingresar correctamente los
+datos personales de cada participante, incluyendo nombre completo, DNI,
+edad y, en caso de que la actividad lo requiera, la talla de vestimenta
+correspondiente. Es responsabilidad del visitante proporcionar
+información veraz y actualizada, ya que la organización no se hará
+responsable por errores o inconvenientes ocasionados por datos
+incorrectos.
 
-Algunas actividades pueden requerir equipamiento o vestimenta específica, como cascos, arneses o indumentaria especial. En esos casos, el participante deberá respetar las indicaciones del personal del parque y cumplir con todos los requisitos de seguridad. La falta de cumplimiento podrá impedir la participación en la actividad, sin derecho a reembolso o compensación.
+Algunas actividades pueden requerir equipamiento o vestimenta específica,
+como cascos, arneses o indumentaria especial. En esos casos, el
+participante deberá respetar las indicaciones del personal del parque y
+cumplir con todos los requisitos de seguridad. La falta de cumplimiento
+podrá impedir la participación en la actividad, sin derecho a reembolso o
+compensación.
 
-El visitante declara encontrarse en condiciones físicas y mentales aptas para realizar la actividad elegida. Los menores de edad deberán estar acompañados por un adulto responsable en todo momento. La organización se reserva el derecho de admisión y permanencia, pudiendo negar o interrumpir la participación en caso de incumplimiento de las normas o por motivos de seguridad.
+El visitante declara encontrarse en condiciones físicas y mentales aptas
+para realizar la actividad elegida. Los menores de edad deberán estar
+acompañados por un adulto responsable en todo momento. La organización
+se reserva el derecho de admisión y permanencia, pudiendo negar o
+interrumpir la participación en caso de incumplimiento de las normas o por
+motivos de seguridad.
 
-En situaciones de condiciones climáticas adversas, razones operativas o fuerza mayor, el parque podrá suspender o reprogramar la actividad sin previo aviso. En caso de reprogramación, se notificará a los participantes utilizando los medios de contacto proporcionados al momento de la inscripción.
+En situaciones de condiciones climáticas adversas, razones operativas o
+fuerza mayor, el parque podrá suspender o reprogramar la actividad sin
+previo aviso. En caso de reprogramación, se notificará a los participantes
+utilizando los medios de contacto proporcionados al momento de la
+inscripción.
 
-Al confirmar tu inscripción, manifestás haber leído y comprendido estos términos y condiciones, y aceptás participar bajo tu propia responsabilidad, respetando las indicaciones del personal y las normas del parque.
+Al confirmar tu inscripción, manifestás haber leído y comprendido estos
+términos y condiciones, y aceptás participar bajo tu propia
+responsabilidad, respetando las indicaciones del personal y las normas
+del parque.
 """)
 
-        self.checkbox = QCheckBox("He leído y acepto los términos y condiciones")
-        self.checkbox.setStyleSheet("color: #FFFFFF; font-size: 14px; font-weight: bold;")
+        self.checkbox = QCheckBox(
+            "He leído y acepto los términos y condiciones")
+        self.checkbox.setStyleSheet(
+            "color: #FFFFFF; font-size: 14px; font-weight: bold;")
 
         botones_layout = QHBoxLayout()
         self.boton_aceptar = QPushButton("Aceptar")
         self.boton_aceptar.setEnabled(False)
         self.boton_cancelar = QPushButton("Cancelar")
 
-        self.boton_aceptar.setStyleSheet("background-color: #00ADB5; color: #FFFFFF; border-radius: 6px; padding: 8px 16px; font-weight: bold;")
-        self.boton_cancelar.setStyleSheet("background-color: #393E46; color: #FFFFFF; border-radius: 6px; padding: 8px 16px;")
+        self.boton_aceptar.setStyleSheet(
+            "background-color: #00ADB5; color: #FFFFFF; border-radius: 6px; "
+            "padding: 8px 16px; font-weight: bold;")
+        self.boton_cancelar.setStyleSheet(
+            "background-color: #393E46; color: #FFFFFF; border-radius: 6px; "
+            "padding: 8px 16px;")
 
-        self.checkbox.stateChanged.connect(lambda s: self.boton_aceptar.setEnabled(bool(s)))
+        self.checkbox.stateChanged.connect(
+            lambda s: self.boton_aceptar.setEnabled(bool(s)))
         self.boton_aceptar.clicked.connect(self.confirmar)
         self.boton_cancelar.clicked.connect(self.reject)
 
@@ -155,7 +196,8 @@ class DialogoPersona(QDialog):
             }
             QPushButton {
                 background-color: #00ADB5; color: #FFFFFF;
-                border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold;
+                border: none; padding: 8px 16px; border-radius: 8px;
+                font-weight: bold;
             }
             QPushButton:hover { background-color: #06C1CB; }
         """)
@@ -186,15 +228,23 @@ class DialogoPersona(QDialog):
                 "dni": int(self.dni.text()),
                 "nombre": self.nombre.text(),
                 "edad": int(self.edad.text()),
-                "talle": self.talle.currentText().strip() if self.talle else None
+                "talle": (self.talle.currentText().strip()
+                          if self.talle else None)
             }
 
-            edad_minima = {"Palestra": 12, "Tirolesa": 8}.get(self.actividad, 0)
+            edad_minima = {"Palestra": 12, "Tirolesa": 8}.get(
+                self.actividad, 0)
             if persona["edad"] < edad_minima:
-                raise ValueError(f"La edad mínima para {self.actividad} es {edad_minima} años.")
+                raise ValueError(
+                    f"La edad mínima para {self.actividad} es "
+                    f"{edad_minima} años."
+                )
 
             if self.requiere_talle and not persona["talle"]:
-                raise ValueError(f"El talle es obligatorio para la actividad {self.actividad}.")
+                raise ValueError(
+                    f"El talle es obligatorio para la actividad "
+                    f"{self.actividad}."
+                )
 
             self.persona_valida = persona
             self.accept()
@@ -224,12 +274,14 @@ class VentanaPrincipal(QMainWindow):
             QMainWindow { background-color: #1E1E2E; color: #FFFFFF; }
             QLabel { color: #FFFFFF; font-size: 14px; }
             QLineEdit, QComboBox, QDateEdit {
-                background-color: #2B2D42; color: #FFFFFF; border-radius: 8px;
-                padding: 6px; border: 1px solid #00ADB5;
+                background-color: #2B2D42; color: #FFFFFF;
+                border-radius: 8px; padding: 6px;
+                border: 1px solid #00ADB5;
             }
             QListWidget {
-                background-color: #2B2D42; color: #FFFFFF; border-radius: 8px;
-                padding: 6px; border: 1px solid #00ADB5;
+                background-color: #2B2D42; color: #FFFFFF;
+                border-radius: 8px; padding: 6px;
+                border: 1px solid #00ADB5;
             }
             QPushButton {
                 background-color: #00ADB5; color: #FFFFFF; border: none;
@@ -250,7 +302,8 @@ class VentanaPrincipal(QMainWindow):
 
         form_layout = QHBoxLayout()
         self.combo_actividad = QComboBox()
-        self.combo_actividad.addItems(["Palestra", "Tirolesa", "Safari", "Jardinería"])
+        self.combo_actividad.addItems(
+            ["Palestra", "Tirolesa", "Safari", "Jardinería"])
 
         self.fecha_input = QDateEdit(calendarPopup=True)
         self.fecha_input.setDate(QDate.currentDate())
@@ -292,15 +345,18 @@ class VentanaPrincipal(QMainWindow):
     def configurar_calendario(self):
         calendario: QCalendarWidget = self.fecha_input.calendarWidget()
         calendario.setGridVisible(True)
-        calendario.setHorizontalHeaderFormat(QCalendarWidget.HorizontalHeaderFormat.ShortDayNames)
-        calendario.setVerticalHeaderFormat(QCalendarWidget.VerticalHeaderFormat.NoVerticalHeader)
+        calendario.setHorizontalHeaderFormat(
+            QCalendarWidget.HorizontalHeaderFormat.ShortDayNames)
+        calendario.setVerticalHeaderFormat(
+            QCalendarWidget.VerticalHeaderFormat.NoVerticalHeader)
 
         paleta = QPalette()
         paleta.setColor(QPalette.ColorRole.Base, QColor("#1E1E2E"))
         paleta.setColor(QPalette.ColorRole.Window, QColor("#1E1E2E"))
         paleta.setColor(QPalette.ColorRole.Text, QColor("#FFFFFF"))
         paleta.setColor(QPalette.ColorRole.Highlight, QColor("#00ADB5"))
-        paleta.setColor(QPalette.ColorRole.HighlightedText, QColor("#000000"))
+        paleta.setColor(
+            QPalette.ColorRole.HighlightedText, QColor("#000000"))
         calendario.setPalette(paleta)
 
         calendario.setStyleSheet("""
@@ -330,7 +386,8 @@ class VentanaPrincipal(QMainWindow):
         formato_uniforme = QTextCharFormat()
         formato_uniforme.setForeground(QColor("#FFFFFF"))
         for dia in range(1, 8):
-            calendario.setWeekdayTextFormat(Qt.DayOfWeek(dia), formato_uniforme)
+            calendario.setWeekdayTextFormat(
+                Qt.DayOfWeek(dia), formato_uniforme)
 
         formato_hoy = QTextCharFormat()
         formato_hoy.setForeground(QColor("#00FFFF"))
@@ -360,10 +417,13 @@ class VentanaPrincipal(QMainWindow):
             persona = dialogo.persona_valida
             if persona:
                 self.personas.append(persona)
-                self.lista_personas.addItem(
-                    f"{persona['dni']} - {persona['nombre']} ({persona['edad']} años"
-                    + (f", talle {persona['talle']}" if persona['talle'] else "") + ")"
+                texto_talle = (f", talle {persona['talle']}"
+                               if persona['talle'] else "")
+                texto_item = (
+                    f"{persona['dni']} - {persona['nombre']} "
+                    f"({persona['edad']} años{texto_talle})"
                 )
+                self.lista_personas.addItem(texto_item)
 
     def eliminar_persona(self):
         fila = self.lista_personas.currentRow()
@@ -371,17 +431,22 @@ class VentanaPrincipal(QMainWindow):
             self.lista_personas.takeItem(fila)
             del self.personas[fila]
         else:
-            QMessageBox.warning(self, "Advertencia", "Seleccione una persona para eliminar.")
+            QMessageBox.warning(
+                self, "Advertencia", "Seleccione una persona para eliminar.")
 
     # ----------------------------------------
     def inscribir(self):
         if not self.personas:
-            QMessageBox.warning(self, "Atención", "Debe agregar al menos una persona antes de inscribirse.")
+            QMessageBox.warning(
+                self, "Atención",
+                "Debe agregar al menos una persona antes de inscribirse.")
             return
 
         dialogo_terminos = TerminosDialog()
         if not dialogo_terminos.exec() or not dialogo_terminos.aceptado:
-            QMessageBox.warning(self, "Atención", "Debe aceptar los términos y condiciones para continuar.")
+            QMessageBox.warning(
+                self, "Atención",
+                "Debe aceptar los términos y condiciones para continuar.")
             return
 
         try:
