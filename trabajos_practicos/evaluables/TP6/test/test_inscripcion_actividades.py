@@ -19,15 +19,15 @@ def test_inscribir_actividad_con_talle_pasa(mocker):
     ]
     acepta_terminos_condiciones = True
 
-    # 馃敼 Mock de conexi贸n y cursor
+    #  Mock de conexi贸n y cursor
     mock_conn = mocker.patch("sqlite3.connect")
     mock_cursor = mock_conn.return_value.cursor.return_value
 
-    # 馃敼 Parsear fecha_actual y hora_actual para crear objeto datetime
+    #  Parsear fecha_actual y hora_actual para crear objeto datetime
     dia, mes, anio = map(int, fecha_actual.split("-"))
     hora, minuto, segundo = map(int, hora_actual.split(":"))
 
-    # 馃敼 Mock de datetime.datetime.now() - devuelve un objeto datetime real
+    #  Mock de datetime.datetime.now() - devuelve un objeto datetime real
     mock_datetime = mocker.patch("src.inscripcion_actividad.datetime")
     mock_datetime.datetime.now.return_value = datetime.datetime(
         anio, mes, dia, hora, minuto, segundo
@@ -36,13 +36,13 @@ def test_inscribir_actividad_con_talle_pasa(mocker):
         lambda *args, **kwargs: datetime.datetime(*args, **kwargs)
     )
 
-    # 馃敼 Simular fetchone() secuencial:
+    #  Simular fetchone() secuencial:
     mock_cursor.fetchone.side_effect = [
         (1, 2, 5),  # id_actividad, id_horario, cupos_disponibles
         (1,), (2,), (3,),  # ids de talles
     ]
 
-    # 馃敼 Ejecutar funci贸n
+    #  Ejecutar funci贸n
     inscribir_actividad(
         actividad,
         fecha_actividad,
@@ -51,23 +51,23 @@ def test_inscribir_actividad_con_talle_pasa(mocker):
         acepta_terminos_condiciones
     )
 
-    # 馃敼 Verificar que se hizo el SELECT correcto
+    #  Verificar que se hizo el SELECT correcto
     mock_cursor.execute.assert_any_call(
         mocker.ANY, (actividad, fecha_actividad, horario_actividad)
     )
 
-    # 馃敼 Verificar que se insertaron inscripciones
+    # 🔹 Verificar que se insertaron inscripciones
     insert_calls = [c for c in mock_cursor.execute.call_args_list
                     if "INSERT INTO INSCRIPCIONES" in str(c)]
 
     assert len(insert_calls) == len(personas)
 
-    # 馃敼 Verificar que se actualizan los cupos
+    #  Verificar que se actualizan los cupos
     mock_cursor.execute.assert_any_call(
         mocker.ANY, (2, 1, 2, fecha_actividad)
     )
 
-    # 馃敼 Verificar que se hizo commit
+    #  Verificar que se hizo commit
     mock_conn.return_value.commit.assert_called_once()
 
 
@@ -88,7 +88,7 @@ def test_inscribir_actividad_sin_talle_requerido_pasa(mocker):
     mock_conn = mocker.patch("sqlite3.connect")
     mock_cursor = mock_conn.return_value.cursor.return_value
 
-    # 馃敼 Parsear fecha_actual y hora_actual para crear objeto datetime
+    #  Parsear fecha_actual y hora_actual para crear objeto datetime
     dia, mes, anio = map(int, fecha_actual.split("-"))
     hora, minuto, segundo = map(int, hora_actual.split(":"))
 
@@ -104,7 +104,7 @@ def test_inscribir_actividad_sin_talle_requerido_pasa(mocker):
         (1, 2, 5),  # id_actividad, id_horario, cupos_disponibles
     ]
 
-    # 馃敼 Ejecutar funci贸n
+    #  Ejecutar funci贸n
     inscribir_actividad(
         actividad,
         fecha_actividad,
@@ -113,23 +113,23 @@ def test_inscribir_actividad_sin_talle_requerido_pasa(mocker):
         acepta_terminos_condiciones
     )
 
-    # 馃敼 Verificar que se hizo el SELECT correcto
+    #  Verificar que se hizo el SELECT correcto
     mock_cursor.execute.assert_any_call(
         mocker.ANY, (actividad, fecha_actividad, horario_actividad)
     )
 
-    # 馃敼 Verificar que se actualizan los cupos
+    #  Verificar que se actualizan los cupos
     mock_cursor.execute.assert_any_call(
         mocker.ANY, (2, 1, 2, fecha_actividad)
     )
 
-    # 馃敼 Verificar que se insertaron inscripciones
+    # 🔹 Verificar que se insertaron inscripciones
     insert_calls = [c for c in mock_cursor.execute.call_args_list
                     if "INSERT INTO INSCRIPCIONES" in str(c)]
 
     assert len(insert_calls) == len(personas)
 
-    # 馃敼 Verificar que se hizo commit
+    #  Verificar que se hizo commit
     mock_conn.return_value.commit.assert_called_once()
 
 
@@ -150,7 +150,7 @@ def test_inscribir_actividad_sin_cupos_disponibles_falla(mocker):
     mock_conn = mocker.patch("sqlite3.connect")
     mock_cursor = mock_conn.return_value.cursor.return_value
 
-    # 馃敼 Parsear fecha_actual y hora_actual para crear objeto datetime
+    #  Parsear fecha_actual y hora_actual para crear objeto datetime
     dia, mes, anio = map(int, fecha_actual.split("-"))
     hora, minuto, segundo = map(int, hora_actual.split(":"))
 
@@ -162,7 +162,7 @@ def test_inscribir_actividad_sin_cupos_disponibles_falla(mocker):
         lambda *args, **kwargs: datetime.datetime(*args, **kwargs)
     )
 
-    # 馃敼 Simulamos que la actividad "Palestra" tiene solo 2 cupos disponibles
+    #  Simulamos que la actividad "Palestra" tiene solo 2 cupos disponibles
     mock_cursor.fetchone.side_effect = [
         (1, 2, 2),  # id_actividad, id_horario, cupos_disponibles
         (1,), (2,), (3,),  # ids de talles
@@ -176,22 +176,23 @@ def test_inscribir_actividad_sin_cupos_disponibles_falla(mocker):
             personas,
             acepta_terminos_condiciones
         )
-        assert False, "Deber铆a lanzar un ValueError por falta de cupos"
+        assert False, "Debería lanzar un ValueError por falta de cupos"
     except ValueError as e:
         assert str(e) == (
             "No hay cupos suficientes para inscribir a todas las personas."
         )
 
-    # 馃敼 Verificamos que se consult贸 correctamente la actividad
+    #  Verificamos que se consult贸 correctamente la actividad
     mock_cursor.execute.assert_any_call(
         mocker.ANY, (actividad, fecha_actividad, horario_actividad)
     )
 
-    # 馃敼 No deber铆an haberse hecho inserciones en la tabla INSCRIPCION
-    # El SELECT es la 煤nica llamada esperada en este punto.
+    # 🔹 No deberían haberse hecho inserciones en la tabla INSCRIPCION
+    # El SELECT es la única llamada esperada en este punto.
+
     assert mock_cursor.execute.call_count == 1
 
-    # 馃敼 No deber铆a haberse hecho commit porque no se insert贸 nada
+    #  No debería haberse hecho commit porque no se insert贸 nada
     mock_conn.return_value.commit.assert_not_called()
 
 
@@ -213,7 +214,7 @@ def test_inscribir_actividad_con_talle_requerido_con_talle_invalido_falla(
     mock_conn = mocker.patch("sqlite3.connect")
     mock_cursor = mock_conn.return_value.cursor.return_value
 
-    # 馃敼 Parsear fecha_actual y hora_actual para crear objeto datetime
+    #  Parsear fecha_actual y hora_actual para crear objeto datetime
     dia, mes, anio = map(int, fecha_actual.split("-"))
     hora, minuto, segundo = map(int, hora_actual.split(":"))
 
@@ -238,7 +239,7 @@ def test_inscribir_actividad_con_talle_requerido_con_talle_invalido_falla(
             personas,
             acepta_terminos_condiciones
         )
-        assert False, "Deber铆a lanzar un ValueError por falta de talles"
+        assert False, "Debería lanzar un ValueError por falta de talles"
     except ValueError as e:
         assert str(e) == "Talle de persona invalido"
 
@@ -273,7 +274,7 @@ def test_inscribir_actividad_sin_aceptar_terminos_falla(mocker):
             acepta_terminos_condiciones
         )
         assert False, (
-            "Deber铆a lanzar un ValueError por no aceptar los terminos y "
+            "Debería lanzar un ValueError por no aceptar los terminos y "
             "condiciones"
         )
     except ValueError as e:
@@ -324,10 +325,10 @@ def test_inscribir_actividad_en_horario_no_valido_falla(
         lambda *args, **kwargs: datetime.datetime(*args, **kwargs)
     )
 
-    # 馃敼 Simular que no hay horario registrado para esa actividad
+    #  Simular que no hay horario registrado para esa actividad
     mock_cursor.fetchone.return_value = None
 
-    # 馃敼 Ejecutar la funci贸n y verificar que lanza un ValueError
+    #  Ejecutar la funci贸n y verificar que lanza un ValueError
     with pytest.raises(ValueError, match="No hay horario para esa actividad."):
         inscribir_actividad(
             actividad,
@@ -337,7 +338,7 @@ def test_inscribir_actividad_en_horario_no_valido_falla(
             acepta_terminos
         )
 
-    # 馃敼 En estos casos, nunca deber铆a llegar a ejecutar un INSERT ni commit
+    #  En estos casos, nunca debería llegar a ejecutar un INSERT ni commit
     mock_conn.return_value.commit.assert_not_called()
 
 
@@ -381,13 +382,13 @@ def test_inscribir_actividad_inferior_edad_minima_falla(
         lambda *args, **kwargs: datetime.datetime(*args, **kwargs)
     )
 
-    # 馃敼 Simular que hay cupos suficientes
+    #  Simular que hay cupos suficientes
     mock_cursor.fetchone.side_effect = [
         (1, 2, 5),  # id_actividad, id_horario, cupos_disponibles
         (1,), (2,), (3,)  # id de los talles cuando se haga el fetch
     ]
 
-    # 馃敼 Ejecutar la funci贸n y verificar que lanza un ValueError
+    #  Ejecutar la funci贸n y verificar que lanza un ValueError
     with pytest.raises(ValueError, match="no cumple con la edad mínima"):
         inscribir_actividad(
             actividad,
@@ -397,7 +398,7 @@ def test_inscribir_actividad_inferior_edad_minima_falla(
             acepta_terminos_condiciones
         )
 
-    # 馃敼 Verificar que NO se realizaron commits
+    #  Verificar que NO se realizaron commits
     assert mock_conn.return_value.commit.call_count == 0
 
 
@@ -446,7 +447,7 @@ def test_inscribir_actividad_ya_realizada_falla(
             acepta_terminos_condiciones
         )
 
-    # 馃敼 Verificar que NO se realizaron commits
+    #  Verificar que NO se realizaron commits
     assert mock_conn.return_value.commit.call_count == 0
 
 
@@ -497,7 +498,7 @@ def test_inscribir_actividad_sin_campos_persona_completos_falla(mocker,
     actividad = "Palestra"
 
     mock_conn = mocker.patch("sqlite3.connect")
-    # F841: La variable mock_cursor ya no es necesaria aqu铆.
+
     # mock_cursor = mock_conn.return_value.cursor.return_value
 
     # Parsear la fecha actual del test
@@ -517,7 +518,7 @@ def test_inscribir_actividad_sin_campos_persona_completos_falla(mocker,
         inscribir_actividad(actividad, fecha_actividad, horario_actividad,
                             personas, acepta_terminos_condiciones)
 
-    # 馃敼 Verificar que NO se realizaron commits
+    # 🔹 Verificar que NO se realizaron commits
     assert mock_conn.return_value.commit.call_count == 0
 
 
