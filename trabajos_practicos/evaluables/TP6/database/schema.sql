@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS ACTIVIDAD_X_HORARIO (
     -- PK compuesta: una fila por (actividad, horario, fecha)
     PRIMARY KEY (id_actividad, id_horario, fecha),
 
-    FOREIGN KEY (id_actividad) REFERENCES ACTIVIDAD (id) ON DELETE CASCADE,
+    FOREIGN KEY (id_actividad) REFERENCES ACTIVIDADES (id) ON DELETE CASCADE,
     FOREIGN KEY (id_horario)   REFERENCES HORARIOS  (id) ON DELETE CASCADE
 );
 -- =========================
@@ -62,21 +62,21 @@ CREATE TABLE IF NOT EXISTS INSCRIPCION (
 
     -- FK a la relación actividad×horario×fecha
     FOREIGN KEY (id_actividad, id_horario, fecha)
-        REFERENCES ACTIVIDAD_X_HORARIO (id_actividad, id_horario, fecha)
+        REFERENCES ACTIVIDADES_X_HORARIOS (id_actividad, id_horario, fecha)
         ON DELETE CASCADE,
 
-    FOREIGN KEY (dni)     REFERENCES VISITANTE (dni) ON DELETE CASCADE,
-    FOREIGN KEY (id_talla) REFERENCES TALLA (id)
+    FOREIGN KEY (dni)     REFERENCES VISITANTES (dni) ON DELETE CASCADE,
+    FOREIGN KEY (id_talla) REFERENCES TALLAS (id)
 );
 
 -- =========================
 -- Índices útiles (performance)
 -- =========================
 CREATE INDEX IF NOT EXISTS idx_axh_actividad_fecha
-    ON ACTIVIDAD_X_HORARIO (id_actividad, fecha);
+    ON ACTIVIDADES_X_HORARIOS (id_actividad, fecha);
 
 CREATE INDEX IF NOT EXISTS idx_inscripcion_dni
-    ON INSCRIPCION (dni);
+    ON INSCRIPCIONES (dni);
 
 CREATE INDEX IF NOT EXISTS idx_inscripcion_talla
-    ON INSCRIPCION (id_talla);
+    ON INSCRIPCIONES (id_talla);

@@ -27,14 +27,19 @@ def inscribir_actividad(actividad, fecha_actividad, horario_actividad, personas,
     if diferencia_dias > 2:
         raise ValueError("No se puede inscribir a una actividad con más de dos dias de anticipacion")
 
-    conn = sqlite3.connect('../data/parque.db')
+    conn = sqlite3.connect('data/parque.db')
     cursor = conn.cursor()
+
+    #Validacion de que todos los datos de las personas esten cargados sin tener en cuenta la talla
+    for persona in personas:
+        if not all([persona.get("dni"), persona.get("nombre"), persona.get("edad")]):
+            raise ValueError("Los datos de la persona están incompletos")
 
     # busca el id del horario, id de la actividad y cupos disponibles para esa actividad en ese horario
     cursor.execute("""
     SELECT A.id, H.id, AXH.cupos_disponibles
-    FROM ACTIVIDAD_X_HORARIO AXH 
-    join ACTIVIDAD A on A.id = AXH.id_actividad 
+    FROM ACTIVIDADES_X_HORARIOS AXH 
+    join ACTIVIDADES A on A.id = AXH.id_actividad 
     join HORARIOS H on AXH.id_horario = H.id
     WHERE A.nombre = ? AND AXH.fecha = ? AND H.hora = ?
     """, (actividad, fecha_actividad, horario_actividad))
@@ -51,7 +56,7 @@ def inscribir_actividad(actividad, fecha_actividad, horario_actividad, personas,
         raise ValueError("No hay cupos suficientes para inscribir a todas las personas.")
 
     cursor.execute("""
-        UPDATE ACTIVIDAD_X_HORARIO AXH 
+        UPDATE ACTIVIDADES_X_HORARIOS AXH 
         SET cupos_disponibles = ? 
         WHERE AXH.id_actividad = ? AND AXH.id_horario = ? AND AXH.fecha = ?
         """, (cupos_actualizados, id_actividad, id_horario, fecha_actividad))
@@ -70,13 +75,13 @@ def inscribir_actividad(actividad, fecha_actividad, horario_actividad, personas,
                 raise ValueError("Talle de persona invalido")
 
             cursor.execute("""
-            INSERT INTO INSCRIPCION (id_actividad, id_horario, fecha, dni, id_talla) 
+            INSERT INTO INSCRIPCIONES (id_actividad, id_horario, fecha, dni, id_talla) 
             VALUES (?, ?, ?, ?, ?)
             """, (id_actividad, id_horario, fecha_actividad, persona["dni"], id_talle[0]))
 
         else:
             cursor.execute("""
-                        INSERT INTO INSCRIPCION (id_actividad, id_horario, fecha, dni) 
+                        INSERT INTO INSCRIPCIONES (id_actividad, id_horario, fecha, dni) 
                         VALUES (?, ?, ?, ?)
                         """, (id_actividad, id_horario, fecha_actividad, persona["dni"]))
     conn.commit()

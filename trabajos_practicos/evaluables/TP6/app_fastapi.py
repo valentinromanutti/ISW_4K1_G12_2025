@@ -1,5 +1,3 @@
-import sqlite3
-import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
@@ -45,6 +43,8 @@ def handle_inscripcion(request_data: InscripcionRequest):
     # 1. Preparar los datos para la función importada
     # Convertir el objeto Pydantic a una lista de diccionarios, que es lo que espera la función.
     personas_dict = [p.dict() for p in request_data.personas]
+
+
 
     # 2. Llamar a la lógica de negocio
     try:
