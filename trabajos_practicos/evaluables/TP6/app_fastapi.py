@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
+from src.inscripcion_actividad import inscribir_actividad
+
 
 # IMPORTACIÓN DE LA LÓGICA DE NEGOCIO
 

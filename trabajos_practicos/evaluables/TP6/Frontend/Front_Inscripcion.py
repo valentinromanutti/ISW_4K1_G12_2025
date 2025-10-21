@@ -8,6 +8,8 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QDate
 from PyQt6.QtGui import QFont, QTextCharFormat, QColor, QPalette
 
+import requests
+API_URL = "http://127.0.0.1:8000/inscribir"
 
 # ----------------------------------------
 # FUNCIÓN LÓGICA DE INSCRIPCIÓN
@@ -340,17 +342,28 @@ class VentanaPrincipal(QMainWindow):
             return
 
         try:
-            mensaje = inscribir_actividad(
-                self.combo_actividad.currentText(),
-                self.fecha_input.date().toString("dd-MM-yyyy"),
-                self.hora_combo.currentText(),
-                self.personas,
-                True
-            )
-            QMessageBox.information(self, "Éxito", "✅ " + mensaje)
-        except ValueError as e:
-            QMessageBox.critical(self, "Error", str(e))
+            payload = {
+                "actividad": self.combo_actividad.currentText(),
+                "fecha_actividad": self.fecha_input.date().toString("dd-MM-yyyy"),  # DD-MM-YYYY
+                "horario_actividad": self.hora_combo.currentText(),                 # HH:MM
+                "personas": self.personas,                                          # lista de dicts
+                "acepta_terminos_condiciones": True
+            }
 
+            resp = requests.post(API_URL, json=payload, timeout=15)
+            if resp.status_code == 201:
+                data = resp.json()
+                QMessageBox.information(self, "Éxito", "✅ " + data.get("mensaje", "Inscripción realizada con éxito."))
+            else:
+                # Errores 400/422/500 con detalle
+                try:
+                    detail = resp.json().get("detail", "")
+                except Exception:
+                    detail = resp.text
+                QMessageBox.critical(self, "Error", f"Error {resp.status_code}: {detail}")
+
+        except Exception as e:
+            QMessageBox.critical(self, "Error", str(e))
 
 # ----------------------------------------
 # MAIN
