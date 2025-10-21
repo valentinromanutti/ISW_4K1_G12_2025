@@ -77,28 +77,31 @@ def inscribir_actividad(
 
         if es_palestra or es_tirolesa:
             raise ValueError("no cumple con la edad mínima")
-        if actividad in ("Palestra", "Tirolesa"):
-            cursor.execute("""
-            SELECT id FROM TALLAS
-            WHERE nombre = ?""", (persona["talle"],))
+        try:
+            if actividad in ("Palestra", "Tirolesa"):
+                cursor.execute("""
+                SELECT id FROM TALLAS
+                WHERE nombre = ?""", (persona["talle"],))
 
-            id_talle = cursor.fetchone()
+                id_talle = cursor.fetchone()
 
-            if id_talle is None:
-                raise ValueError("Talle de persona invalido")
+                if id_talle is None:
+                    raise ValueError("Talle de persona invalido")
 
-            cursor.execute("""
-            INSERT INTO INSCRIPCIONES (id_actividad, id_horario, fecha, dni, id_talla, nombre_visitante) 
-            VALUES (?, ?, ?, ?, ?, ?)
-            """, (
-                id_actividad, id_horario, fecha_actividad,
-                persona["dni"], id_talle[0], persona["talle"],))
+                cursor.execute("""
+                INSERT INTO INSCRIPCIONES (id_actividad, id_horario, fecha, dni, id_talla, nombre_visitante) 
+                VALUES (?, ?, ?, ?, ?, ?)
+                """, (
+                    id_actividad, id_horario, fecha_actividad,
+                    persona["dni"], id_talle[0], persona["talle"],))
+            else:
+                cursor.execute("""
+                            INSERT INTO INSCRIPCIONES (id_actividad, id_horario, fecha, dni, nombre_visitante) 
+                            VALUES (?, ?, ?, ?, ?)
+                            """, (id_actividad, id_horario, fecha_actividad, persona["dni"], persona["nombre"]))
+        except sqlite3.IntegrityError:
+            raise ValueError("No se puede inscribir con el mismo DNI en un mismo horario de actividad")
 
-        else:
-            cursor.execute("""
-                        INSERT INTO INSCRIPCIONES (id_actividad, id_horario, fecha, dni, nombre_visitante) 
-                        VALUES (?, ?, ?, ?, ?)
-                        """, (id_actividad, id_horario, fecha_actividad, persona["dni"], persona["nombre"]))
     conn.commit()
     cursor.close()
     print(row)

@@ -1,6 +1,7 @@
 import datetime
 from src.inscripcion_actividad import inscribir_actividad
 import pytest
+import sqlite3
 
 
 def test_inscribir_actividad_con_talle_pasa(mocker):
@@ -504,5 +505,46 @@ def test_inscribir_actividad_sin_campos_persona_completos_falla(mocker, personas
     # 🔹 Verificar que NO se realizaron commits
     assert mock_conn.return_value.commit.call_count == 0
 
+def test_inscribir_actividad_dos_veces_falla(mocker):
+    fecha_actual = "17-10-2025"
+    hora_actual = "12:00:00"
+    fecha_actividad = "19-10-2025"
+    horario_actividad = "16:00"
+    acepta_terminos_condiciones = True
+    actividad = "Palestra"
 
+    personas = [
+        {"dni": 100000, "nombre": "Juan Perez", "edad": 18, "talle": "M"},
+        {"dni": 100001, "nombre": "Maria Perez", "edad": 20, "talle": "S"},
+        {"dni": 100002, "nombre": "Pepito", "edad": 15, "talle": "L"}
+    ]
 
+    mock_conn = mocker.patch("sqlite3.connect")
+    mock_cursor = mock_conn.return_value.cursor.return_value
+    dia, mes, anio = map(int, fecha_actual.split("-"))
+    hora, minuto, segundo = map(int, hora_actual.split(":"))
+    mock_datetime = mocker.patch("src.inscripcion_actividad.datetime")
+
+    mock_datetime.datetime.now.return_value = datetime.datetime(
+        anio, mes, dia, hora, minuto, segundo
+    )
+    mock_datetime.datetime.side_effect = lambda *args, **kwargs: datetime.datetime(*args, **kwargs)
+
+    # Función que simula comportamiento del cursor.fetchone()
+    llamadas = {"n": 0}
+
+    def fake_fetchone():
+        llamadas["n"] += 1
+        if llamadas["n"] == 1:
+            return (1, 2, 5)  # SELECT principal
+        elif llamadas["n"] in (2, 3):
+            return (1,)  # SELECT de talla
+        elif llamadas["n"] == 4:
+            # Simula un error SQL en el tercer intento
+            raise sqlite3.IntegrityError("Registro duplicado en INSCRIPCIONES")
+
+    mock_cursor.fetchone.side_effect = fake_fetchone
+
+    # Ejecutar y verificar que el error SQL se propaga como tal
+    with pytest.raises(ValueError, match="No se puede inscribir con el mismo DNI en un mismo horario de actividad"):
+        inscribir_actividad(actividad, fecha_actividad, horario_actividad, personas, acepta_terminos_condiciones)

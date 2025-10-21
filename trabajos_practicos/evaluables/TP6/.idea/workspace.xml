@@ -5,11 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0aa61f3e-403f-4cef-8cd1-11727e2caf1e" name="Changes" comment="inscripcion a actividades pasa todos los test">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/df489470-597d-45f9-9caa-49f494f0a6d9.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/df489470-597d-45f9-9caa-49f494f0a6d9.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app_fastapi.py" beforeDir="false" afterPath="$PROJECT_DIR$/app_fastapi.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/parque.db" beforeDir="false" afterPath="$PROJECT_DIR$/data/parque.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/inscripcion_actividad.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/inscripcion_actividad.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test_inscripcion_actividades.py" beforeDir="false" afterPath="$PROJECT_DIR$/test/test_inscripcion_actividades.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,7 +87,7 @@
       <recent name="C:\Users\franm\OneDrive\Escritorio\UTN\2025\ISW\ISW_4K1_G12_2025\trabajos_practicos\evaluables\TP6\data" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.Front_Inscripcion">
+  <component name="RunManager" selected="Python tests.pytest for test_inscripcion_actividades.test_inscribir_actividad_dos_veces_falla">
     <configuration name="Front_Inscripcion" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="TP6" />
       <option name="ENV_FILES" value="" />
@@ -161,7 +159,7 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_inscripcion_actividades.test_inscribir_actividad_sin_llenar_campos_falla" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="pytest for test_inscripcion_actividades.test_inscribir_actividad_dos_veces_falla" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
       <module name="TP6" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -172,18 +170,20 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_inscripcion_actividades.test_inscribir_actividad_sin_llenar_campos_falla&quot;" />
+      <option name="_new_target" value="&quot;test_inscripcion_actividades.test_inscribir_actividad_dos_veces_falla&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.pytest for test_inscripcion_actividades.test_inscribir_actividad_dos_veces_falla" />
         <item itemvalue="Python.Front_Inscripcion" />
         <item itemvalue="Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_sin_campos_persona_completos_falla" />
         <item itemvalue="Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_sin_campos_completos_falla" />
         <item itemvalue="Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_mas_de_dos_dias_antes_falla" />
-        <item itemvalue="Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_sin_llenar_campos_falla" />
       </list>
     </recent_temporary>
   </component>
@@ -207,7 +207,7 @@
       <workItem from="1760986864563" duration="12810000" />
       <workItem from="1760999870908" duration="232000" />
       <workItem from="1761066265958" duration="3281000" />
-      <workItem from="1761069557225" duration="2405000" />
+      <workItem from="1761069557225" duration="3122000" />
     </task>
     <task id="LOCAL-00001" summary="test inscribir con talle paso">
       <option name="closed" value="true" />
