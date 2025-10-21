@@ -28,7 +28,7 @@ Las siguientes reglas son mandatorias y se aplicarán mediante herramientas de a
 | **Espacios en Operadores** | Usar un espacio alrededor de operadores binarios. | `x = 1 + y` (no `x=1+y`) |
 | **Espacios en Comas** | Usar un espacio después de las comas en listas, tuplas, etc. | `mi_lista = [1, 2, 3]` (no `[1,2,3]`) |
 | **Espacios en Paréntesis** | No usar espacios pegados a paréntesis o corchetes. | `print(variable)` (no `print ( variable )`) |
-| **Convenciones de Nombres** | Usar **`lower_case_with_underscores`** para variables, funciones,métodos,archivos y directorios. | `mi_variable`, `calcular_impuesto()` |
+| **Convenciones de Nombres** | Usar **`lower_case_with_underscores`** para variables, funciones,métodos y archivos. | `mi_variable`, `calcular_impuesto()` |
 
 ### Agrupación y Orden de Importaciones
 
