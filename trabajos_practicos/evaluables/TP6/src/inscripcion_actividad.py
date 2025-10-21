@@ -139,3 +139,20 @@ def inscribir_actividad(
             cursor.close()
         if conn:
             conn.close()
+
+
+def mostrar_cupos_para_fecha_hora_actividad(actividad, fecha_actividad, horario_actividad):
+
+    conn = sqlite3.connect('data/parque.db')
+    cursor = conn.cursor()
+
+    # busca el id del horario, id de la actividad y cupos disponibles
+    cursor.execute("""
+    SELECT AXH.cupos_disponibles
+    FROM ACTIVIDADES_X_HORARIOS AXH 
+    join ACTIVIDADES A on A.id = AXH.id_actividad 
+    join HORARIOS H on AXH.id_horario = H.id
+    WHERE A.nombre = ? AND AXH.fecha = ? AND H.hora = ?
+    """, (actividad, fecha_actividad, horario_actividad))
+
+    return cursor.fetchone()

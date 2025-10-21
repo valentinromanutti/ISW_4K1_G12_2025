@@ -1,0 +1,45 @@
+GET http://localhost:8000/cupos
+User-Agent: IntelliJ HTTP Client/PyCharm 2024.3.5
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2025-10-21T171655.405.json
+
+###
+
+GET http://localhost:8000/cupos
+User-Agent: IntelliJ HTTP Client/PyCharm 2024.3.5
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2025-10-21T171035.404.json
+
+###
+
+GET http://localhost:8000/cupos
+User-Agent: IntelliJ HTTP Client/PyCharm 2024.3.5
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2025-10-21T170928.404.json
+
+###
+
+GET http://localhost:8000/cupos
+User-Agent: IntelliJ HTTP Client/PyCharm 2024.3.5
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2025-10-21T170833.404.json
+
+###
+
+GET http://localhost:8000/cupos
+User-Agent: IntelliJ HTTP Client/PyCharm 2024.3.5
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2025-10-21T170410.404.json
+
+###
+

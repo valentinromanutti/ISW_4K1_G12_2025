@@ -1,13 +1,13 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
 from typing import List, Optional
-from src.inscripcion_actividad import inscribir_actividad
 
 
 # IMPORTACIÓN DE LA LÓGICA DE NEGOCIO
 
 try:
     from src.inscripcion_actividad import inscribir_actividad
+    from src.inscripcion_actividad import mostrar_cupos_para_fecha_hora_actividad
 except ImportError:
     print(
         r"¡ADVERTENCIA! No se pudo importar 'inscripcion_actividad'. "
@@ -36,6 +36,12 @@ class InscripcionRequest(BaseModel):
     horario_actividad: str  # Formato HH:MM
     personas: List[PersonaInscripcion]
     acepta_terminos_condiciones: bool
+
+class CuposActividad(BaseModel):
+    # Define la estructura del cuerpo completo de la solicitud POST.
+    actividad: str
+    fecha_actividad: str  # Formato DD-MM-YYYY
+    horario_actividad: str  # Formato HH:MM
 
 # --- SERVIDOR FASTAPI Y ENDPOINT ---
 
@@ -97,4 +103,35 @@ def handle_inscripcion(request_data: InscripcionRequest):
         raise HTTPException(
             status_code=500,
             detail="Error interno del servidor al procesar la inscripción."
+        )
+
+
+class CuposRequest(BaseModel):
+    # Define la estructura de los parámetros para consultar cupos
+    actividad: str
+    fecha_actividad: str  # Formato DD-MM-YYYY
+    horario_actividad: str # Formato HH:MM
+@app.post(
+    "/cupos",
+    response_model=dict,
+    tags=["Consultas"]
+)
+def get_cupos(request_data: CuposRequest):
+    try:
+        resultado_cupos = mostrar_cupos_para_fecha_hora_actividad(
+            request_data.actividad,
+            request_data.fecha_actividad,
+            request_data.horario_actividad
+        )
+        # ✅ Devolver un dict
+        return {"cupos": resultado_cupos}
+
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+    except Exception as e:
+        print(f"Error interno al consultar cupos: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Error interno del servidor al consultar cupos."
         )
