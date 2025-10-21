@@ -75,8 +75,7 @@ def handle_inscripcion(request_data: InscripcionRequest):
         )
 
         # Respuesta exitosa
-        return {"mensaje": "Inscripción realizada con éxito.",
-                "datos": resultado}
+        return {"mensaje": "Inscripción realizada con éxito."}
 
     except ValueError as e:
         # Errores de validación de negocio (capturados de la función)

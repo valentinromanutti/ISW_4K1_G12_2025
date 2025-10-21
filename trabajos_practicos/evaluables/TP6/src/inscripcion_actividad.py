@@ -51,6 +51,8 @@ def inscribir_actividad(
     WHERE A.nombre = ? AND AXH.fecha = ? AND H.hora = ?
     """, (actividad, fecha_actividad, horario_actividad))
 
+    print("paso")
+
     row = cursor.fetchone()
 
     if row is None:
@@ -64,11 +66,11 @@ def inscribir_actividad(
             "No hay cupos suficientes para inscribir a todas las personas.")
 
     cursor.execute("""
-        UPDATE ACTIVIDADES_X_HORARIOS AXH 
-        SET cupos_disponibles = ? 
-        WHERE AXH.id_actividad = ? AND AXH.id_horario = ? AND AXH.fecha = ?
-        """, (cupos_actualizados, id_actividad, id_horario, fecha_actividad))
-
+    UPDATE ACTIVIDADES_X_HORARIOS
+    SET cupos_disponibles = ? 
+    WHERE id_actividad = ? AND id_horario = ? AND fecha = ?
+    """, (cupos_actualizados, id_actividad, id_horario, fecha_actividad))
+    print("paso2")
     for persona in personas:
         es_palestra = (actividad == "Palestra" and persona["edad"] < 12)
         es_tirolesa = (actividad == "Tirolesa" and persona["edad"] < 8)
@@ -77,7 +79,7 @@ def inscribir_actividad(
             raise ValueError("no cumple con la edad mínima")
         if actividad in ("Palestra", "Tirolesa"):
             cursor.execute("""
-            SELECT id FROM TALLA
+            SELECT id FROM TALLAS
             WHERE nombre = ?""", (persona["talle"],))
 
             id_talle = cursor.fetchone()
@@ -86,18 +88,17 @@ def inscribir_actividad(
                 raise ValueError("Talle de persona invalido")
 
             cursor.execute("""
-            INSERT INTO INSCRIPCIONES (id_actividad, id_horario, fecha, dni, id_talla) 
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO INSCRIPCIONES (id_actividad, id_horario, fecha, dni, id_talla, nombre_visitante) 
+            VALUES (?, ?, ?, ?, ?, ?)
             """, (
                 id_actividad, id_horario, fecha_actividad,
-                persona["dni"], id_talle[0]))
+                persona["dni"], id_talle[0], persona["talle"],))
 
         else:
             cursor.execute("""
-                        INSERT INTO INSCRIPCIONES (id_actividad, id_horario, fecha, dni) 
-                        VALUES (?, ?, ?, ?)
-                        """, (id_actividad, id_horario, fecha_actividad, persona["dni"]))
+                        INSERT INTO INSCRIPCIONES (id_actividad, id_horario, fecha, dni, nombre_visitante) 
+                        VALUES (?, ?, ?, ?, ?)
+                        """, (id_actividad, id_horario, fecha_actividad, persona["dni"], persona["nombre"]))
     conn.commit()
     cursor.close()
-
     print(row)
