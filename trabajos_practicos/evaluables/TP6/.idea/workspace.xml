@@ -5,10 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0aa61f3e-403f-4cef-8cd1-11727e2caf1e" name="Changes" comment="inscripcion a actividades pasa todos los test">
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app_fastapi.py" beforeDir="false" afterPath="$PROJECT_DIR$/API/app_fastapi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/parque.db" beforeDir="false" afterPath="$PROJECT_DIR$/data/parque.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/inscripcion_actividad.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/inscripcion_actividad.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/test_inscripcion_actividades.py" beforeDir="false" afterPath="$PROJECT_DIR$/test/test_inscripcion_actividades.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,10 +87,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\franm\OneDrive\Escritorio\UTN\2025\ISW\ISW_4K1_G12_2025\trabajos_practicos\evaluables\TP6\API" />
       <recent name="C:\Users\franm\OneDrive\Escritorio\UTN\2025\ISW\ISW_4K1_G12_2025\trabajos_practicos\evaluables\TP6\data" />
     </key>
   </component>
-  <component name="RunManager" selected="HTTP Request.generated-requests | #1">
+  <component name="RunManager" selected="Python.Front_Inscripcion">
     <configuration name="generated-requests | #1" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" executionIdentifier="#1" runType="Run single request">
       <method v="2" />
     </configuration>
@@ -167,8 +168,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="HTTP Request.generated-requests | #1" />
         <item itemvalue="Python.Front_Inscripcion" />
+        <item itemvalue="HTTP Request.generated-requests | #1" />
         <item itemvalue="Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_sin_campos_persona_completos_falla" />
         <item itemvalue="Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_sin_campos_completos_falla" />
         <item itemvalue="Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_mas_de_dos_dias_antes_falla" />
@@ -198,6 +199,9 @@
       <workItem from="1761069557225" duration="2405000" />
       <workItem from="1761074984739" duration="395000" />
       <workItem from="1761075538040" duration="2061000" />
+      <workItem from="1761084603646" duration="1351000" />
+      <workItem from="1761143075454" duration="767000" />
+      <workItem from="1761156189340" duration="327000" />
     </task>
     <task id="LOCAL-00001" summary="test inscribir con talle paso">
       <option name="closed" value="true" />
@@ -272,7 +276,7 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/TP6$pytest_for_test_inscripcion_actividades_test_inscribir_actividad_dos_veces_falla.coverage" NAME="pytest for test_inscripcion_actividades.test_inscribir_actividad_dos_veces_falla Coverage Results" MODIFIED="1761074525697" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test" />
     <SUITE FILE_PATH="coverage/TP6$inscripcion_actividad.coverage" NAME="inscripcion_actividad Coverage Results" MODIFIED="1760989236630" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
-    <SUITE FILE_PATH="coverage/TP6$Front_Inscripcion.coverage" NAME="Front_Inscripcion Coverage Results" MODIFIED="1761075882514" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Frontend" />
+    <SUITE FILE_PATH="coverage/TP6$Front_Inscripcion.coverage" NAME="Front_Inscripcion Coverage Results" MODIFIED="1761143088853" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Frontend" />
     <SUITE FILE_PATH="coverage/TP6$.coverage" NAME=" Coverage Results" MODIFIED="1761071291036" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test" />
   </component>
 </project>

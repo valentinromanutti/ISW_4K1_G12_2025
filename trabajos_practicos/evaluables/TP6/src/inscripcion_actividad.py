@@ -35,11 +35,15 @@ def inscribir_actividad(
 
     if diferencia_dias > 2:
         raise ValueError(
-            "No se puede inscribir a una actividad con más de dos dias de anticipacion")
+            "No se puede inscribir a una actividad con "
+            "más de dos dias de anticipacion")
 
     # Validación de que todos los datos de las personas esten cargados
     for persona in personas:
-        if not all([persona.get("dni"), persona.get("nombre"), persona.get("edad")]):
+        if not all(
+                [persona.get("dni"),
+                 persona.get("nombre"),
+                 persona.get("edad")]):
             raise ValueError("Los datos de la persona están incompletos")
 
     # -----------------------------------------------------------
@@ -52,14 +56,13 @@ def inscribir_actividad(
         cursor = conn.cursor()
 
         # busca el id del horario, id de la actividad y cupos disponibles
-        cursor.execute("""
-        SELECT A.id, H.id, AXH.cupos_disponibles
-        FROM ACTIVIDADES_X_HORARIOS AXH 
-        join ACTIVIDADES A on A.id = AXH.id_actividad 
-        join HORARIOS H on AXH.id_horario = H.id
-        WHERE A.nombre = ? AND AXH.fecha = ? AND H.hora = ?
-        """, (actividad, fecha_actividad, horario_actividad))
-
+        cursor.execute(
+        "SELECT A.id, H.id, AXH.cupos_disponibles "
+        "FROM ACTIVIDADES_X_HORARIOS AXH "
+        "join ACTIVIDADES A on A.id = AXH.id_actividad "
+        "join HORARIOS H on AXH.id_horario = H.id "
+        "WHERE A.nombre = ? AND AXH.fecha = ? AND H.hora = ?"
+        , (actividad, fecha_actividad, horario_actividad))
         # print("paso") # Se comenta print de debug
 
         row = cursor.fetchone()
@@ -86,7 +89,8 @@ def inscribir_actividad(
         # 2. INSERTA INSCRIPCIONES
         try:
             for persona in personas:
-                es_palestra = (actividad == "Palestra" and persona["edad"] < 12)
+                es_palestra = (
+                    actividad == "Palestra" and persona["edad"] < 12)
                 es_tirolesa = (actividad == "Tirolesa" and persona["edad"] < 8)
 
                 if es_palestra or es_tirolesa:
@@ -117,10 +121,13 @@ def inscribir_actividad(
                     VALUES (?, ?, ?, ?, ?, ?)
                     """, (
                         id_actividad, id_horario, fecha_actividad,
-                        persona["dni"], None, persona["nombre"]))  # Se pasa None como id_talla
+                        # Se pasa None como id_talla
+                        persona["dni"], None, persona["nombre"]))
 
-        except IntegrityError:
-            raise ValueError("No se puede inscribir con el mismo DNI en un mismo horario de actividad")
+        except IntegrityError as e:
+            print(e)
+            raise ValueError(
+                "No se puede inscribir con el mismo DNI en un mismo horario de actividad")
 
         # Si todo se ejecutó sin errores
         conn.commit()
