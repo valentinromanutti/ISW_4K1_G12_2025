@@ -40,10 +40,11 @@ def inscribir_actividad(
 
     # Validación de que todos los datos de las personas esten cargados
     for persona in personas:
-        if not all(
-                [persona.get("dni"),
-                 persona.get("nombre"),
-                 persona.get("edad")]):
+        if not all([
+            persona.get("dni"),
+            persona.get("nombre"),
+            persona.get("edad")
+        ]):
             raise ValueError("Los datos de la persona están incompletos")
 
     # -----------------------------------------------------------
@@ -57,12 +58,12 @@ def inscribir_actividad(
 
         # busca el id del horario, id de la actividad y cupos disponibles
         cursor.execute(
-        "SELECT A.id, H.id, AXH.cupos_disponibles "
-        "FROM ACTIVIDADES_X_HORARIOS AXH "
-        "join ACTIVIDADES A on A.id = AXH.id_actividad "
-        "join HORARIOS H on AXH.id_horario = H.id "
-        "WHERE A.nombre = ? AND AXH.fecha = ? AND H.hora = ?"
-        , (actividad, fecha_actividad, horario_actividad))
+            "SELECT A.id, H.id, AXH.cupos_disponibles "
+            "FROM ACTIVIDADES_X_HORARIOS AXH "
+            "join ACTIVIDADES A on A.id = AXH.id_actividad "
+            "join HORARIOS H on AXH.id_horario = H.id "
+            "WHERE A.nombre = ? AND AXH.fecha = ? AND H.hora = ?",
+            (actividad, fecha_actividad, horario_actividad))
         # print("paso") # Se comenta print de debug
 
         row = cursor.fetchone()
@@ -75,12 +76,13 @@ def inscribir_actividad(
 
         if cupos_actualizados < 0:
             raise ValueError(
-                "No hay cupos suficientes para inscribir a todas las personas.")
+                "No hay cupos suficientes para"
+                " inscribir a todas las personas.")
 
         # 1. ACTUALIZA CUPOS
         cursor.execute("""
         UPDATE ACTIVIDADES_X_HORARIOS
-        SET cupos_disponibles = ? 
+        SET cupos_disponibles = ?
         WHERE id_actividad = ? AND id_horario = ? AND fecha = ?
         """, (cupos_actualizados, id_actividad, id_horario, fecha_actividad))
 
@@ -91,7 +93,8 @@ def inscribir_actividad(
             for persona in personas:
                 es_palestra = (
                     actividad == "Palestra" and persona["edad"] < 12)
-                es_tirolesa = (actividad == "Tirolesa" and persona["edad"] < 8)
+                es_tirolesa = (
+                    actividad == "Tirolesa" and persona["edad"] < 8)
 
                 if es_palestra or es_tirolesa:
                     raise ValueError("no cumple con la edad mínima")
@@ -99,7 +102,8 @@ def inscribir_actividad(
                 if actividad in ("Palestra", "Tirolesa"):
                     cursor.execute("""
                     SELECT id FROM TALLAS
-                    WHERE nombre = ?""", (persona.get("talle"),))  # Se usa .get para evitar KeyError si 'talle' falta
+                    WHERE nombre = ?""", (persona.get("talle"),))
+                    # Se usa .get para evitar KeyError si 'talle' falta
 
                     id_talle = cursor.fetchone()
 
@@ -107,27 +111,30 @@ def inscribir_actividad(
                         raise ValueError("Talle de persona invalido")
 
                     cursor.execute("""
-                    INSERT INTO INSCRIPCIONES 
-                    (id_actividad, id_horario, fecha, dni, id_talla, nombre_visitante) 
+                    INSERT INTO INSCRIPCIONES
+                    (id_actividad, id_horario, fecha, dni,
+                     id_talla, nombre_visitante)
                     VALUES (?, ?, ?, ?, ?, ?)
                     """, (
                         id_actividad, id_horario, fecha_actividad,
                         persona["dni"], id_talle[0], persona["nombre"]))
                 else:
-                    # CORRECCIÓN DE ERROR SQL: Se aseguran 6 placeholders para 6 columnas.
+                    # CORRECCIÓN DE ERROR SQL: Se aseguran 6 placeholders.
                     cursor.execute("""
-                    INSERT INTO INSCRIPCIONES 
-                    (id_actividad, id_horario, fecha, dni ,id_talla , nombre_visitante) 
+                    INSERT INTO INSCRIPCIONES
+                    (id_actividad, id_horario, fecha, dni,
+                     id_talla, nombre_visitante)
                     VALUES (?, ?, ?, ?, ?, ?)
                     """, (
                         id_actividad, id_horario, fecha_actividad,
-                        # Se pasa None como id_talla
                         persona["dni"], None, persona["nombre"]))
+                    # Se pasa None como id_talla
 
         except IntegrityError as e:
             print(e)
             raise ValueError(
-                "No se puede inscribir con el mismo DNI en un mismo horario de actividad")
+                "No se puede inscribir con el mismo DNI en un mismo "
+                "horario de actividad")
 
         # Si todo se ejecutó sin errores
         conn.commit()
@@ -137,7 +144,7 @@ def inscribir_actividad(
         # Si ocurre un error de validación o de DB, se garantiza el rollback.
         if conn:
             conn.rollback()
-        raise e  # Relanzamos la excepción para que sea manejada por el router de la API
+        raise e  # Relanzamos la excepción
 
     finally:
         # ESTE BLOQUE SE EJECUTA SIEMPRE: Asegura el cierre de la conexión.
@@ -147,7 +154,8 @@ def inscribir_actividad(
             conn.close()
 
 
-def mostrar_cupos_para_fecha_hora_actividad(actividad, fecha_actividad, horario_actividad):
+def mostrar_cupos_para_fecha_hora_actividad(
+        actividad, fecha_actividad, horario_actividad):
 
     conn = sqlite3.connect('data/parque.db')
     cursor = conn.cursor()
@@ -155,8 +163,8 @@ def mostrar_cupos_para_fecha_hora_actividad(actividad, fecha_actividad, horario_
     # busca el id del horario, id de la actividad y cupos disponibles
     cursor.execute("""
     SELECT AXH.cupos_disponibles
-    FROM ACTIVIDADES_X_HORARIOS AXH 
-    join ACTIVIDADES A on A.id = AXH.id_actividad 
+    FROM ACTIVIDADES_X_HORARIOS AXH
+    join ACTIVIDADES A on A.id = AXH.id_actividad
     join HORARIOS H on AXH.id_horario = H.id
     WHERE A.nombre = ? AND AXH.fecha = ? AND H.hora = ?
     """, (actividad, fecha_actividad, horario_actividad))

@@ -1,21 +1,32 @@
 import sys
 from datetime import datetime, timedelta
 from PyQt6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QCheckBox,
-    QComboBox, QPushButton, QVBoxLayout, QHBoxLayout, QListWidget,
-    QMessageBox, QDialog, QFormLayout, QDateEdit, QCalendarWidget, QTextEdit, QSizePolicy
+    QApplication,
+    QMainWindow,
+    QWidget,
+    QLabel,
+    QLineEdit,
+    QCheckBox,
+    QComboBox,
+    QPushButton,
+    QVBoxLayout,
+    QHBoxLayout,
+    QMessageBox,
+    QDialog,
+    QFormLayout,
+    QDateEdit,
+    QCalendarWidget,
+    QTextEdit,
+    QSizePolicy,
+    QTableWidget,
+    QTableWidgetItem,
+    QHeaderView,
 )
-from PyQt6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QCheckBox,
-    QComboBox, QPushButton, QVBoxLayout, QHBoxLayout,
-    QMessageBox, QDialog, QFormLayout, QDateEdit, QCalendarWidget, QTextEdit, QSizePolicy,
-    QTableWidget, QTableWidgetItem, QHeaderView
-)
-from PyQt6.QtGui import QIntValidator
+from PyQt6.QtGui import QIntValidator, QFont, QTextCharFormat, QColor, QPalette
 from PyQt6.QtCore import Qt, QDate
-from PyQt6.QtGui import QFont, QTextCharFormat, QColor, QPalette
 
 import requests
+
 API_URL = "http://127.0.0.1:8000/inscribir"
 CUPOS_URL = "http://127.0.0.1:8000/cupos"
 
@@ -24,13 +35,19 @@ CUPOS_URL = "http://127.0.0.1:8000/cupos"
 # FUNCIÓN LÓGICA DE INSCRIPCIÓN
 # ----------------------------------------
 def inscribir_actividad(
-        actividad, fecha_actividad, horario_actividad, personas,
-        acepta_terminos_condiciones):
+    actividad,
+    fecha_actividad,
+    horario_actividad,
+    personas,
+    acepta_terminos_condiciones,
+):
     if not acepta_terminos_condiciones:
         raise ValueError("Se deben aceptar los términos y condiciones")
 
     fecha_actividad_dt = datetime.strptime(fecha_actividad, "%d-%m-%Y")
-    fecha_actual_dt = datetime.strptime(datetime.now().strftime("%d-%m-%Y"), "%d-%m-%Y")
+    fecha_actual_dt = datetime.strptime(
+        datetime.now().strftime("%d-%m-%Y"), "%d-%m-%Y"
+    )
 
     if fecha_actividad_dt.day == 25 and fecha_actividad_dt.month == 12:
         raise ValueError("No se permiten inscripciones en Navidad.")
@@ -39,7 +56,9 @@ def inscribir_actividad(
     if fecha_actividad_dt < fecha_actual_dt:
         raise ValueError("No se puede inscribir a actividades ya realizadas")
     if fecha_actividad_dt > fecha_actual_dt + timedelta(days=2):
-        raise ValueError("No se puede inscribir con más de dos días de anticipación")
+        raise ValueError(
+            "No se puede inscribir con más de dos días de anticipación"
+        )
     if fecha_actividad_dt.weekday() == 0:
         raise ValueError("No se permiten inscripciones los lunes.")
 
@@ -55,9 +74,13 @@ def inscribir_actividad(
     for persona in personas:
         edad_minima = {"Palestra": 12, "Tirolesa": 8}.get(actividad, 0)
         if persona["edad"] < edad_minima:
-            raise ValueError(f"La edad mínima para {actividad} es {edad_minima} años.")
+            raise ValueError(
+                f"La edad mínima para {actividad} es {edad_minima} años."
+            )
         if actividad in ["Palestra", "Tirolesa"] and not persona.get("talle"):
-            raise ValueError(f"El talle es obligatorio para {actividad}.")
+            raise ValueError(
+                f"El talle es obligatorio para {actividad}."
+            )
 
     return "Inscripción realizada correctamente."
 
@@ -69,7 +92,7 @@ class TerminosDialog(QDialog):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Términos y Condiciones de Participación")
-        self.setMinimumSize(450, 400)  # 🔹 Más chico
+        self.setMinimumSize(450, 400)
         self.aceptado = False
 
         layout = QVBoxLayout()
@@ -78,7 +101,8 @@ class TerminosDialog(QDialog):
 
         texto = QTextEdit()
         texto.setReadOnly(True)
-        texto.setStyleSheet("""
+        texto.setStyleSheet(
+            """
             QTextEdit {
                 background-color: #134611;
                 color: #E8FCCF;
@@ -86,26 +110,47 @@ class TerminosDialog(QDialog):
                 font-size: 13px;
                 font-weight: 500;
             }
-        """)
+            """
+        )
 
-        # 🔹 Texto original completo
-        texto.setText("""Términos y Condiciones de Participación en Actividades
+        texto.setText(
+            """Términos y Condiciones de Participación en Actividades
 
-Al inscribirte en una actividad del parque, confirmás que comprendés y aceptás los siguientes términos y condiciones de participación.
+Al inscribirte en una actividad del parque, confirmás que comprendés y
+ aceptás los siguientes términos y condiciones de participación.
 
-La inscripción será válida únicamente para las actividades habilitadas dentro del listado oficial del parque, que incluye Tirolesa, Safari, Palestra y Jardinería. Cada una de ellas cuenta con cupos limitados por horario, por lo que la reserva quedará confirmada solamente si existen lugares disponibles al momento de realizar la inscripción.
+La inscripción será válida únicamente para las actividades habilitadas
+ dentro del listado oficial del parque, que incluye Tirolesa, Safari,
+ Palestra y Jardinería. Cada una de ellas cuenta con cupos limitados por
+ horario, por lo que la reserva quedará confirmada solamente si existen
+ lugares disponibles al momento de realizar la inscripción.
 
-No se permitirá la participación en actividades fuera del horario operativo del parque, que se encuentra comprendido entre las 9:00 y las 18:00 horas. Las actividades no se realizarán los días lunes ni en fechas festivas como Navidad o Año Nuevo.
+No se permitirá la participación en actividades fuera del horario
+ operativo del parque, que se encuentra comprendido entre las 9:00 y
+ las 18:00 horas. Las actividades no se realizarán los días lunes ni en
+ fechas festivas como Navidad o Año Nuevo.
 
-Cada participante deberá cumplir con los requisitos de edad mínima y, en el caso de actividades como Tirolesa o Palestra, con la utilización obligatoria del equipo de seguridad adecuado, incluyendo arnés y casco del talle correspondiente.
+Cada participante deberá cumplir con los requisitos de edad mínima y,
+ en el caso de actividades como Tirolesa o Palestra, con la utilización
+ obligatoria del equipo de seguridad adecuado, incluyendo arnés y casco
+ del talle correspondiente.
 
-El parque se reserva el derecho de cancelar o reprogramar actividades debido a condiciones climáticas adversas o por motivos de seguridad, notificando a los inscriptos por los medios de comunicación disponibles.
+El parque se reserva el derecho de cancelar o reprogramar actividades
+ debido a condiciones climáticas adversas o por motivos de seguridad,
+ notificando a los inscriptos por los medios de comunicación disponibles.
 
-Al aceptar estos términos y condiciones, el participante declara haber leído y comprendido las normas establecidas y se compromete a cumplir con las indicaciones del personal del parque durante la actividad.
-""")
+Al aceptar estos términos y condiciones, el participante declara haber
+ leído y comprendido las normas establecidas y se compromete a cumplir
+ con las indicaciones del personal del parque durante la actividad.
+"""
+        )
 
-        self.checkbox = QCheckBox("He leído y acepto los términos y condiciones")
-        self.checkbox.setStyleSheet("color: #E8FCCF; font-size: 13px; font-weight: bold;")
+        self.checkbox = QCheckBox(
+            "He leído y acepto los términos y condiciones"
+        )
+        self.checkbox.setStyleSheet(
+            "color: #E8FCCF; font-size: 13px; font-weight: bold;"
+        )
 
         botones_layout = QHBoxLayout()
         self.boton_aceptar = QPushButton("Aceptar")
@@ -115,10 +160,15 @@ Al aceptar estos términos y condiciones, el participante declara haber leído y
         for b in (self.boton_aceptar, self.boton_cancelar):
             b.setMinimumHeight(30)
             b.setStyleSheet(
-                "background-color: #96E072; color: #134611; border-radius: 6px; font-weight: bold;"
+                (
+                    "background-color: #96E072; color: #134611;"
+                    " border-radius: 6px; font-weight: bold;"
+                )
             )
 
-        self.checkbox.stateChanged.connect(lambda s: self.boton_aceptar.setEnabled(bool(s)))
+        self.checkbox.stateChanged.connect(
+            lambda s: self.boton_aceptar.setEnabled(bool(s))
+        )
         self.boton_aceptar.clicked.connect(self.confirmar)
         self.boton_cancelar.clicked.connect(self.reject)
 
@@ -147,7 +197,8 @@ class DialogoPersona(QDialog):
         self.persona_valida = None
 
         layout = QFormLayout()
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             QDialog { background-color: #134611; color: #E8FCCF; }
             QLineEdit, QComboBox {
                 background-color: #3E8914; color: #E8FCCF;
@@ -155,10 +206,12 @@ class DialogoPersona(QDialog):
             }
             QPushButton {
                 background-color: #96E072; color: #134611;
-                border: none; padding: 8px; border-radius: 8px; font-weight: bold;
+                border: none; padding: 8px; border-radius: 8px;
+                font-weight: bold;
             }
             QPushButton:hover { background-color: #E8FCCF; }
-        """)
+            """
+        )
 
         self.dni = QLineEdit()
         self.nombre = QLineEdit()
@@ -182,63 +235,80 @@ class DialogoPersona(QDialog):
             self.talle = None
 
         boton = QPushButton("Guardar")
-        boton.clicked.connect(self.guardar)
+        boton.clicked.connect(self.accept)
         layout.addRow(boton)
         self.setLayout(layout)
 
-    def guardar(self):
-        try:
-            persona = {
-                "dni": int(self.dni.text()),
-                "nombre": self.nombre.text(),
-                "edad": int(self.edad.text()),
-                "talle": (self.talle.currentText().strip() if self.talle else None)
-            }
-            edad_minima = {"Palestra": 12, "Tirolesa": 8}.get(self.actividad, 0)
-            if persona["edad"] < edad_minima:
-                raise ValueError(f"La edad mínima para {self.actividad} es {edad_minima} años.")
-            if self.requiere_talle and not persona["talle"]:
-                raise ValueError(f"El talle es obligatorio para {self.actividad}.")
-            self.persona_valida = persona
-            self.accept()
-        except Exception as e:
-            QMessageBox.critical(self, "Error", str(e))
-
     def accept(self):
-        nombre = self.input_nombre.text().strip()
-        dni_txt = self.input_dni.text().strip()
-        edad_txt = self.input_edad.text().strip()
-        talle = self.combo_talle.currentText() if hasattr(self, "combo_talle") else None
+        nombre = self.nombre.text().strip()
+        dni_txt = self.dni.text().strip()
+        edad_txt = self.edad.text().strip()
+        talle = self.talle.currentText() if self.talle else None
 
         if not nombre:
             QMessageBox.warning(self, "Formato inválido", "Ingresá un nombre.")
             return
 
         if not dni_txt.isdigit():
-            QMessageBox.warning(self, "Formato inválido", "El DNI debe contener solo números.")
+            QMessageBox.warning(
+                self,
+                "Formato inválido",
+                "El DNI debe contener solo números.",
+            )
             return
-        if len(dni_txt) < 7:  # opcional
-            QMessageBox.warning(self, "Formato inválido", "El DNI debe tener al menos 7 dígitos.")
+        if len(dni_txt) < 7:
+            QMessageBox.warning(
+                self,
+                "Formato inválido",
+                "El DNI debe tener al menos 7 dígitos.",
+            )
             return
 
         if not edad_txt.isdigit():
-            QMessageBox.warning(self, "Formato inválido", "La edad debe ser un número.")
+            QMessageBox.warning(
+                self,
+                "Formato inválido",
+                "La edad debe ser un número.",
+            )
             return
 
         dni = int(dni_txt)
         edad = int(edad_txt)
         if not (1 <= edad <= 119):
-            QMessageBox.warning(self, "Formato inválido", "La edad debe estar entre 1 y 119.")
+            QMessageBox.warning(
+                self,
+                "Formato inválido",
+                "La edad debe estar entre 1 y 119.",
+            )
+            return
+
+        edad_minima = {"Palestra": 12, "Tirolesa": 8}.get(self.actividad, 0)
+        if edad < edad_minima:
+            QMessageBox.warning(
+                self,
+                "Formato inválido",
+                (
+                    f"La edad mínima para {self.actividad} es "
+                    f"{edad_minima} años."
+                ),
+            )
+            return
+
+        if self.requiere_talle and not talle:
+            QMessageBox.warning(
+                self,
+                "Formato inválido",
+                f"El talle es obligatorio para {self.actividad}.",
+            )
             return
 
         self.persona_valida = {
             "nombre": nombre,
             "dni": dni,
             "edad": edad,
-            "talle": talle or None
+            "talle": talle or None,
         }
         super().accept()
-
 
 
 # ----------------------------------------
@@ -260,7 +330,8 @@ class VentanaPrincipal(QMainWindow):
         palette.setColor(QPalette.ColorRole.ButtonText, QColor("#134611"))
         self.setPalette(palette)
 
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             QMainWindow { background-color: #134611; color: #E8FCCF; }
             QLabel { color: #E8FCCF; font-size: 14px; }
             QLineEdit, QComboBox, QDateEdit {
@@ -289,7 +360,8 @@ class VentanaPrincipal(QMainWindow):
                 font-weight: bold;
             }
             QPushButton:hover { background-color: #E8FCCF; }
-        """)
+            """
+        )
 
         central = QWidget()
         layout = QVBoxLayout()
@@ -306,7 +378,9 @@ class VentanaPrincipal(QMainWindow):
         form_layout.setSpacing(10)
 
         self.combo_actividad = QComboBox()
-        self.combo_actividad.addItems(["Palestra", "Tirolesa", "Safari", "Jardinería"])
+        self.combo_actividad.addItems(
+            ["Palestra", "Tirolesa", "Safari", "Jardinería"]
+        )
         self.fecha_input = QDateEdit(calendarPopup=True)
         self.fecha_input.setDate(QDate.currentDate())
         self.fecha_input.setDisplayFormat("dd-MM-yyyy")
@@ -314,8 +388,12 @@ class VentanaPrincipal(QMainWindow):
         self.hora_combo = QComboBox()
         self.hora_combo.addItems(self.generar_horarios())
 
-        self.combo_actividad.currentTextChanged.connect(self.on_actividad_cambiada)
-        self.fecha_input.dateChanged.connect(self.actualizar_horarios_con_cupos)
+        self.combo_actividad.currentTextChanged.connect(
+            self.on_actividad_cambiada
+        )
+        self.fecha_input.dateChanged.connect(
+            self.actualizar_horarios_con_cupos
+        )
 
         form_layout.addRow(QLabel("Actividad:"), self.combo_actividad)
         form_layout.addRow(QLabel("Fecha:"), self.fecha_input)
@@ -324,11 +402,21 @@ class VentanaPrincipal(QMainWindow):
 
         layout.addWidget(QLabel("Personas inscritas:"))
         self.tabla_personas = QTableWidget(0, 4, self)
-        self.tabla_personas.setHorizontalHeaderLabels(["Nombre", "DNI", "Edad", "Talle"])
-        self.tabla_personas.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        self.tabla_personas.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
-        self.tabla_personas.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
-        self.tabla_personas.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.tabla_personas.setHorizontalHeaderLabels(
+            ["Nombre", "DNI", "Edad", "Talle"]
+        )
+        self.tabla_personas.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Stretch
+        )
+        self.tabla_personas.setSelectionBehavior(
+            QTableWidget.SelectionBehavior.SelectRows
+        )
+        self.tabla_personas.setSelectionMode(
+            QTableWidget.SelectionMode.SingleSelection
+        )
+        self.tabla_personas.setEditTriggers(
+            QTableWidget.EditTrigger.NoEditTriggers
+        )
         layout.addWidget(self.tabla_personas)
 
         botones_layout = QVBoxLayout()
@@ -337,7 +425,9 @@ class VentanaPrincipal(QMainWindow):
         btn_eliminar = QPushButton("Eliminar Persona")
         btn_inscribir = QPushButton("Inscribir")
         for btn in (btn_agregar, btn_eliminar, btn_inscribir):
-            btn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+            btn.setSizePolicy(
+                QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
+            )
             botones_layout.addWidget(btn)
         layout.addLayout(botones_layout)
 
@@ -349,19 +439,23 @@ class VentanaPrincipal(QMainWindow):
         self.setCentralWidget(central)
         self.actualizar_horarios_con_cupos()
 
-
-
     def configurar_calendario(self):
         calendario = self.fecha_input.calendarWidget()
         calendario.setGridVisible(True)
-        calendario.setHorizontalHeaderFormat(QCalendarWidget.HorizontalHeaderFormat.ShortDayNames)
-        calendario.setVerticalHeaderFormat(QCalendarWidget.VerticalHeaderFormat.NoVerticalHeader)
+        calendario.setHorizontalHeaderFormat(
+            QCalendarWidget.HorizontalHeaderFormat.ShortDayNames
+        )
+        calendario.setVerticalHeaderFormat(
+            QCalendarWidget.VerticalHeaderFormat.NoVerticalHeader
+        )
         paleta = QPalette()
         paleta.setColor(QPalette.ColorRole.Base, QColor("#3E8914"))
         paleta.setColor(QPalette.ColorRole.Window, QColor("#134611"))
         paleta.setColor(QPalette.ColorRole.Text, QColor("#E8FCCF"))
         paleta.setColor(QPalette.ColorRole.Highlight, QColor("#96E072"))
-        paleta.setColor(QPalette.ColorRole.HighlightedText, QColor("#134611"))
+        paleta.setColor(
+            QPalette.ColorRole.HighlightedText, QColor("#134611")
+        )
         calendario.setPalette(paleta)
 
         formato_hoy = QTextCharFormat()
@@ -389,17 +483,22 @@ class VentanaPrincipal(QMainWindow):
         if dialogo.exec():
             persona = dialogo.persona_valida
             if persona:
-                # guardar en la lista de datos
                 self.personas.append(persona)
 
-                # agregar fila a la tabla
                 row = self.tabla_personas.rowCount()
                 self.tabla_personas.insertRow(row)
-                self.tabla_personas.setItem(row, 0, QTableWidgetItem(persona["nombre"]))
-                self.tabla_personas.setItem(row, 1, QTableWidgetItem(str(persona["dni"])))
-                self.tabla_personas.setItem(row, 2, QTableWidgetItem(str(persona["edad"])))
-                self.tabla_personas.setItem(row, 3, QTableWidgetItem(persona.get("talle") or "—"))
-
+                self.tabla_personas.setItem(
+                    row, 0, QTableWidgetItem(persona["nombre"])
+                )
+                self.tabla_personas.setItem(
+                    row, 1, QTableWidgetItem(str(persona["dni"]))
+                )
+                self.tabla_personas.setItem(
+                    row, 2, QTableWidgetItem(str(persona["edad"]))
+                )
+                self.tabla_personas.setItem(
+                    row, 3, QTableWidgetItem(persona.get("talle") or "—")
+                )
 
     def eliminar_persona(self):
         fila = self.tabla_personas.currentRow()
@@ -407,34 +506,57 @@ class VentanaPrincipal(QMainWindow):
             self.tabla_personas.removeRow(fila)
             del self.personas[fila]
         else:
-            QMessageBox.warning(self, "Advertencia", "Seleccione una persona para eliminar.")
-
+            QMessageBox.warning(
+                self,
+                "Advertencia",
+                "Seleccione una persona para eliminar.",
+            )
 
     def inscribir(self):
         if not self.personas:
-            QMessageBox.warning(self, "Atención", "Debe agregar al menos una persona antes de inscribirse.")
+            QMessageBox.warning(
+                self,
+                "Atención",
+                "Debe agregar al menos una persona antes de inscribirse.",
+            )
             return
 
         dialogo_terminos = TerminosDialog()
         if not dialogo_terminos.exec() or not dialogo_terminos.aceptado:
-            QMessageBox.warning(self, "Atención", "Debe aceptar los términos y condiciones para continuar.")
+            QMessageBox.warning(
+                self,
+                "Atención",
+                (
+                    "Debe aceptar los términos y condiciones para "
+                    "continuar."
+                ),
+            )
             return
 
         try:
-            hora_seleccionada = self.hora_combo.currentData() or self.hora_combo.currentText().split(" —")[0]
+            hora_sel = self.hora_combo.currentData()
+            hora_seleccionada = (
+                hora_sel
+                or self.hora_combo.currentText().split(" —")[0]
+            )
 
             payload = {
                 "actividad": self.combo_actividad.currentText(),
-                "fecha_actividad": self.fecha_input.date().toString("dd-MM-yyyy"),
+                "fecha_actividad": self.fecha_input.date().toString(
+                    "dd-MM-yyyy"
+                ),
                 "horario_actividad": hora_seleccionada,
                 "personas": self.personas,
-                "acepta_terminos_condiciones": True
+                "acepta_terminos_condiciones": True,
             }
 
             resp = requests.post(API_URL, json=payload, timeout=15)
             if resp.status_code == 201:
                 data = resp.json()
-                QMessageBox.information(self, "Éxito", "✅ " + data.get("mensaje", "Inscripción realizada con éxito."))
+                mensaje = data.get(
+                    "mensaje", "Inscripción realizada con éxito."
+                )
+                QMessageBox.information(self, "Éxito", "✅ " + mensaje)
             else:
                 try:
                     detail = resp.json().get("detail", "")
@@ -442,8 +564,8 @@ class VentanaPrincipal(QMainWindow):
                     detail = resp.text
                 QMessageBox.critical(self, "Error", f"Error: {detail}")
 
-        except Exception as e:
-            QMessageBox.critical(self, "Error", str(e))
+        except Exception as exc:
+            QMessageBox.critical(self, "Error", str(exc))
 
     def actualizar_horarios_con_cupos(self):
         actividad = self.combo_actividad.currentText()
@@ -459,50 +581,38 @@ class VentanaPrincipal(QMainWindow):
                     json={
                         "actividad": actividad,
                         "fecha_actividad": fecha,
-                        "horario_actividad": h
+                        "horario_actividad": h,
                     },
-                    timeout=10
+                    timeout=10,
                 )
 
                 if resp.status_code == 200:
                     data = resp.json() or {}
                     cupos = data.get("cupos", None)
 
-                    # 👉 Si cupos es None, no mostramos este horario
                     if cupos is None:
                         continue
 
                     display = f"{h} — cupos: {cupos}"
                     self.hora_combo.addItem(display, userData=h)
-
                 else:
-                    # si la API respondió error (404/500), lo ignoramos
                     continue
 
             except Exception:
-                # si hay error en la request, seguimos con el siguiente horario
                 continue
 
-
     def on_actividad_cambiada(self, _texto):
-        """
-        Al cambiar la actividad:
+        """Al cambiar la actividad:
         - Limpia las personas agregadas (datos + tabla).
         - Refresca los horarios con cupos para la nueva actividad.
         """
-        # 1) Limpiar datos
         if getattr(self, "personas", None):
             self.personas.clear()
 
-        # 2) Limpiar tabla visual
         if hasattr(self, "tabla_personas"):
             self.tabla_personas.setRowCount(0)
 
-        # 3) Refrescar horarios con cupos
         self.actualizar_horarios_con_cupos()
-
-
-
 
 
 # ----------------------------------------

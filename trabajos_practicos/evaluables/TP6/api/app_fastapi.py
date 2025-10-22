@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -6,8 +6,10 @@ from typing import List, Optional
 # IMPORTACIÓN DE LA LÓGICA DE NEGOCIO
 
 try:
-    from src.inscripcion_actividad import inscribir_actividad
-    from src.inscripcion_actividad import mostrar_cupos_para_fecha_hora_actividad
+    from src.inscripcion_actividad import (
+        inscribir_actividad,
+        mostrar_cupos_para_fecha_hora_actividad
+    )
 except ImportError:
     print(
         r"¡ADVERTENCIA! No se pudo importar 'inscripcion_actividad'. "
@@ -36,6 +38,7 @@ class InscripcionRequest(BaseModel):
     horario_actividad: str  # Formato HH:MM
     personas: List[PersonaInscripcion]
     acepta_terminos_condiciones: bool
+
 
 class CuposActividad(BaseModel):
     # Define la estructura del cuerpo completo de la solicitud POST.
@@ -68,13 +71,11 @@ def handle_inscripcion(request_data: InscripcionRequest):
     # lo que espera la función.
     personas_dict = [p.dict() for p in request_data.personas]
 
-
-
     # 2. Llamar a la lógica de negocio
     try:
         # La función inscribir_actividad se encarga de toda la
         # validación y la DB.
-        resultado = inscribir_actividad(
+        inscribir_actividad(
             request_data.actividad,
             request_data.fecha_actividad,
             request_data.horario_actividad,
@@ -110,7 +111,9 @@ class CuposRequest(BaseModel):
     # Define la estructura de los parámetros para consultar cupos
     actividad: str
     fecha_actividad: str  # Formato DD-MM-YYYY
-    horario_actividad: str # Formato HH:MM
+    horario_actividad: str  # Formato HH:MM
+
+
 @app.post(
     "/cupos",
     response_model=dict,

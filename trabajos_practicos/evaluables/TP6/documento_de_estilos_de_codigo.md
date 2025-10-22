@@ -69,29 +69,21 @@ Los *tests* deben seguir una convención estricta para identificar claramente su
 ### Estructura del Repositorio
 
 La estructura del repositorio debe ser la siguiente:
-- .idea/
-    - inspectionProfiles/
-- .pytest_cache/
-    - v/
-        - cache/
+- api/
 - data/
-- database/
 - frontend/
 - src/
-    - __pycache__/
 - test/
-    - __pycache__/
-
 
 | Directorio | Propósito |
 | :--- | :--- |
-| **`data`** | Contendrá todo el código relacionado con la **base de datos** y acceso a datos. |
-| **`database`** | Contendrá la **base de datos**. |
+| **`data`** | Contendrá la **base de datos** y todo el código relacionado al acceso a datos. |
+| **`api`** | Contendrá nuestra **API** y todo el código relacionado. |
 | **`frontend`** | Contendrá todo el código relacionado con la **interfaz de usuario** (frontend). |
 | **`source`** | Contendrá todo el código relacionado con la **lógica de negocio** del sistema. |
 | **`test`** | Contendrá todo el código relacionado con las **pruebas** unitarias e integración. |
 
-Los archivos principales de la API (`app_fastapi.py`) y el **documento de estilos** (`documentos_de_estilos_de_codigo.py`) deben ubicarse en la **raíz** del directorio.
+El **documento de estilos** (`documentos_de_estilos_de_codigo.py`) debe ubicarse en la **raíz** del directorio.
 
 ***
 
