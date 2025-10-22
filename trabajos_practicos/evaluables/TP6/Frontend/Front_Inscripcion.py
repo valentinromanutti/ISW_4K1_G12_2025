@@ -5,11 +5,20 @@ from PyQt6.QtWidgets import (
     QComboBox, QPushButton, QVBoxLayout, QHBoxLayout, QListWidget,
     QMessageBox, QDialog, QFormLayout, QDateEdit, QCalendarWidget, QTextEdit, QSizePolicy
 )
+from PyQt6.QtWidgets import (
+    QApplication, QMainWindow, QWidget, QLabel, QLineEdit, QCheckBox,
+    QComboBox, QPushButton, QVBoxLayout, QHBoxLayout,
+    QMessageBox, QDialog, QFormLayout, QDateEdit, QCalendarWidget, QTextEdit, QSizePolicy,
+    QTableWidget, QTableWidgetItem, QHeaderView
+)
+from PyQt6.QtGui import QIntValidator
 from PyQt6.QtCore import Qt, QDate
 from PyQt6.QtGui import QFont, QTextCharFormat, QColor, QPalette
 
 import requests
 API_URL = "http://127.0.0.1:8000/inscribir"
+CUPOS_URL = "http://127.0.0.1:8000/cupos"
+
 
 # ----------------------------------------
 # FUNCIÓN LÓGICA DE INSCRIPCIÓN
@@ -158,6 +167,12 @@ class DialogoPersona(QDialog):
         layout.addRow("Nombre:", self.nombre)
         layout.addRow("Edad:", self.edad)
 
+        self.dni.setValidator(QIntValidator(0, 99999999, self))
+        self.dni.setMaxLength(8)
+        self.dni.setPlaceholderText("Solo números")
+        self.edad.setValidator(QIntValidator(1, 119, self))
+        self.edad.setPlaceholderText("Solo números")
+
         self.requiere_talle = self.actividad in ["Palestra", "Tirolesa"]
         if self.requiere_talle:
             self.talle = QComboBox()
@@ -189,6 +204,42 @@ class DialogoPersona(QDialog):
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e))
 
+    def accept(self):
+        nombre = self.input_nombre.text().strip()
+        dni_txt = self.input_dni.text().strip()
+        edad_txt = self.input_edad.text().strip()
+        talle = self.combo_talle.currentText() if hasattr(self, "combo_talle") else None
+
+        if not nombre:
+            QMessageBox.warning(self, "Formato inválido", "Ingresá un nombre.")
+            return
+
+        if not dni_txt.isdigit():
+            QMessageBox.warning(self, "Formato inválido", "El DNI debe contener solo números.")
+            return
+        if len(dni_txt) < 7:  # opcional
+            QMessageBox.warning(self, "Formato inválido", "El DNI debe tener al menos 7 dígitos.")
+            return
+
+        if not edad_txt.isdigit():
+            QMessageBox.warning(self, "Formato inválido", "La edad debe ser un número.")
+            return
+
+        dni = int(dni_txt)
+        edad = int(edad_txt)
+        if not (1 <= edad <= 119):
+            QMessageBox.warning(self, "Formato inválido", "La edad debe estar entre 1 y 119.")
+            return
+
+        self.persona_valida = {
+            "nombre": nombre,
+            "dni": dni,
+            "edad": edad,
+            "talle": talle or None
+        }
+        super().accept()
+
+
 
 # ----------------------------------------
 # Ventana principal mobile-friendly
@@ -217,11 +268,21 @@ class VentanaPrincipal(QMainWindow):
                 border-radius: 8px; padding: 6px;
                 border: 1px solid #96E072;
             }
-            QListWidget {
+            QTableWidget {
                 background-color: #3E8914; color: #E8FCCF;
                 border-radius: 8px; padding: 6px;
                 border: 1px solid #96E072;
+                gridline-color: #96E072;
             }
+            QHeaderView::section {
+                background-color: #134611; color: #E8FCCF;
+                font-weight: bold; padding: 6px;
+                border: 0px; border-right: 1px solid #3E8914;
+            }
+            QTableWidget::item:selected {
+                background-color: #96E072; color: #134611;
+            }
+
             QPushButton {
                 background-color: #96E072; color: #134611;
                 border: none; padding: 10px; border-radius: 8px;
@@ -253,14 +314,22 @@ class VentanaPrincipal(QMainWindow):
         self.hora_combo = QComboBox()
         self.hora_combo.addItems(self.generar_horarios())
 
+        self.combo_actividad.currentTextChanged.connect(self.on_actividad_cambiada)
+        self.fecha_input.dateChanged.connect(self.actualizar_horarios_con_cupos)
+
         form_layout.addRow(QLabel("Actividad:"), self.combo_actividad)
         form_layout.addRow(QLabel("Fecha:"), self.fecha_input)
         form_layout.addRow(QLabel("Horario:"), self.hora_combo)
         layout.addLayout(form_layout)
 
         layout.addWidget(QLabel("Personas inscritas:"))
-        self.lista_personas = QListWidget()
-        layout.addWidget(self.lista_personas)
+        self.tabla_personas = QTableWidget(0, 4, self)
+        self.tabla_personas.setHorizontalHeaderLabels(["Nombre", "DNI", "Edad", "Talle"])
+        self.tabla_personas.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.tabla_personas.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.tabla_personas.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
+        self.tabla_personas.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        layout.addWidget(self.tabla_personas)
 
         botones_layout = QVBoxLayout()
         botones_layout.setSpacing(8)
@@ -278,6 +347,9 @@ class VentanaPrincipal(QMainWindow):
 
         central.setLayout(layout)
         self.setCentralWidget(central)
+        self.actualizar_horarios_con_cupos()
+
+
 
     def configurar_calendario(self):
         calendario = self.fecha_input.calendarWidget()
@@ -317,19 +389,26 @@ class VentanaPrincipal(QMainWindow):
         if dialogo.exec():
             persona = dialogo.persona_valida
             if persona:
+                # guardar en la lista de datos
                 self.personas.append(persona)
-                texto_talle = f", talle {persona['talle']}" if persona['talle'] else ""
-                self.lista_personas.addItem(
-                    f"{persona['dni']} - {persona['nombre']} ({persona['edad']} años{texto_talle})"
-                )
+
+                # agregar fila a la tabla
+                row = self.tabla_personas.rowCount()
+                self.tabla_personas.insertRow(row)
+                self.tabla_personas.setItem(row, 0, QTableWidgetItem(persona["nombre"]))
+                self.tabla_personas.setItem(row, 1, QTableWidgetItem(str(persona["dni"])))
+                self.tabla_personas.setItem(row, 2, QTableWidgetItem(str(persona["edad"])))
+                self.tabla_personas.setItem(row, 3, QTableWidgetItem(persona.get("talle") or "—"))
+
 
     def eliminar_persona(self):
-        fila = self.lista_personas.currentRow()
+        fila = self.tabla_personas.currentRow()
         if fila >= 0:
-            self.lista_personas.takeItem(fila)
+            self.tabla_personas.removeRow(fila)
             del self.personas[fila]
         else:
             QMessageBox.warning(self, "Advertencia", "Seleccione una persona para eliminar.")
+
 
     def inscribir(self):
         if not self.personas:
@@ -342,11 +421,13 @@ class VentanaPrincipal(QMainWindow):
             return
 
         try:
+            hora_seleccionada = self.hora_combo.currentData() or self.hora_combo.currentText().split(" —")[0]
+
             payload = {
                 "actividad": self.combo_actividad.currentText(),
-                "fecha_actividad": self.fecha_input.date().toString("dd-MM-yyyy"),  # DD-MM-YYYY
-                "horario_actividad": self.hora_combo.currentText(),                 # HH:MM
-                "personas": self.personas,                                          # lista de dicts
+                "fecha_actividad": self.fecha_input.date().toString("dd-MM-yyyy"),
+                "horario_actividad": hora_seleccionada,
+                "personas": self.personas,
                 "acepta_terminos_condiciones": True
             }
 
@@ -355,15 +436,74 @@ class VentanaPrincipal(QMainWindow):
                 data = resp.json()
                 QMessageBox.information(self, "Éxito", "✅ " + data.get("mensaje", "Inscripción realizada con éxito."))
             else:
-                # Errores 400/422/500 con detalle
                 try:
                     detail = resp.json().get("detail", "")
                 except Exception:
                     detail = resp.text
-                QMessageBox.critical(self, "Error", f"Error {resp.status_code}: {detail}")
+                QMessageBox.critical(self, "Error", f"Error: {detail}")
 
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e))
+
+    def actualizar_horarios_con_cupos(self):
+        actividad = self.combo_actividad.currentText()
+        fecha = self.fecha_input.date().toString("dd-MM-yyyy")
+        horarios = self.generar_horarios()
+
+        self.hora_combo.clear()
+
+        for h in horarios:
+            try:
+                resp = requests.post(
+                    CUPOS_URL,
+                    json={
+                        "actividad": actividad,
+                        "fecha_actividad": fecha,
+                        "horario_actividad": h
+                    },
+                    timeout=10
+                )
+
+                if resp.status_code == 200:
+                    data = resp.json() or {}
+                    cupos = data.get("cupos", None)
+
+                    # 👉 Si cupos es None, no mostramos este horario
+                    if cupos is None:
+                        continue
+
+                    display = f"{h} — cupos: {cupos}"
+                    self.hora_combo.addItem(display, userData=h)
+
+                else:
+                    # si la API respondió error (404/500), lo ignoramos
+                    continue
+
+            except Exception:
+                # si hay error en la request, seguimos con el siguiente horario
+                continue
+
+
+    def on_actividad_cambiada(self, _texto):
+        """
+        Al cambiar la actividad:
+        - Limpia las personas agregadas (datos + tabla).
+        - Refresca los horarios con cupos para la nueva actividad.
+        """
+        # 1) Limpiar datos
+        if getattr(self, "personas", None):
+            self.personas.clear()
+
+        # 2) Limpiar tabla visual
+        if hasattr(self, "tabla_personas"):
+            self.tabla_personas.setRowCount(0)
+
+        # 3) Refrescar horarios con cupos
+        self.actualizar_horarios_con_cupos()
+
+
+
+
 
 # ----------------------------------------
 # MAIN
