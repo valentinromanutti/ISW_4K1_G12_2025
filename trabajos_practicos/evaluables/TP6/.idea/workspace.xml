@@ -5,10 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0aa61f3e-403f-4cef-8cd1-11727e2caf1e" name="Changes" comment="inscripcion a actividades pasa todos los test">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app_fastapi.py" beforeDir="false" afterPath="$PROJECT_DIR$/API/app_fastapi.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/parque.db" beforeDir="false" afterPath="$PROJECT_DIR$/data/parque.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/inscripcion_actividad.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/inscripcion_actividad.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../parciales/parcial1/practico/..txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../parciales/parcial1/teorico/00_Introducción_a_la_Ingenieria_de_Software.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../parciales/parcial1/teorico/01_SCM.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../parciales/parcial1/teorico/02_Rqs_Agiles_USER_STORIES.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../parciales/parcial1/teorico/03 Estimaciones Ágiles.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../parciales/parcial1/teorico/04_Gestión_de_Productos_de_Software.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../parciales/parcial1/teorico/05_Componentes_de_Proyecto_SW.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../parciales/parcial1/teorico/06 Estimaciones de Sw.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../parciales/parcial1/teorico/07 SCRUM 2020, Planificación de release y sprint, Métricas Scrum.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../parciales/parcial2/practico/..txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../parciales/parcial2/teorico/..txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../parciales/parcial2/teorico/08 Testing de Software.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../parciales/parcial2/teorico/08_Agile_Testing.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../no_evaluables/..txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,65 +36,14 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
     <option name="RESET_MODE" value="HARD" />
   </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;monchietti&quot;
-  }
-}</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/valentinromanutti/ISW_4K1_G12_2025.git&quot;,
-    &quot;accountId&quot;: &quot;91d4ee93-0882-4d0f-9d25-6fccfbf93e34&quot;
-  }
-}</component>
-  <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 2
-}</component>
   <component name="ProjectId" id="34Cv3D4xdnS8V6fjnZZWb5jkvWa" />
-  <component name="ProjectLevelVcsManager">
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="1" id="Add" />
   </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;HTTP Request.generated-requests | #1.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_con_talle_pasa.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_con_talle_requerido_con_talle_invalido_falla.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_en_horario_no_valido_falla.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_falla_por_edad_minima.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_inferior_edad_minima_falla.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_mas_de_dos_dias_antes_falla.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_sin_aceptar_terminos_falla.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_sin_campos_completos_falla.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_sin_campos_persona_completos_falla.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_sin_cupos_disponibles_falla.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_sin_llenar_campos_falla.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_sin_talle_requerido_pasa.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_ya_realizada_falla.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_inscripcion_actividades.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Front_Inscripcion.executor&quot;: &quot;Run&quot;,
-    &quot;Python.inscripcion_actividad.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;database.data.extractors.current.export.id&quot;: &quot;Comma-separated (CSV)_id&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
-  },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;sqlite&quot;
-    ]
-  }
-}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\franm\OneDrive\Escritorio\UTN\2025\ISW\ISW_4K1_G12_2025\trabajos_practicos\evaluables\TP6\API" />
@@ -97,7 +56,6 @@
     </configuration>
     <configuration name="Front_Inscripcion" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="TP6" />
-      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -120,7 +78,6 @@
     </configuration>
     <configuration name="Python tests for test_inscripcion_actividades.test_inscribir_actividad_mas_de_dos_dias_antes_falla" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="TP6" />
-      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
@@ -136,7 +93,6 @@
     </configuration>
     <configuration name="Python tests for test_inscripcion_actividades.test_inscribir_actividad_sin_campos_completos_falla" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="TP6" />
-      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
@@ -152,7 +108,6 @@
     </configuration>
     <configuration name="Python tests for test_inscripcion_actividades.test_inscribir_actividad_sin_campos_persona_completos_falla" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="TP6" />
-      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
@@ -169,7 +124,6 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.Front_Inscripcion" />
-        <item itemvalue="HTTP Request.generated-requests | #1" />
         <item itemvalue="Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_sin_campos_persona_completos_falla" />
         <item itemvalue="Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_sin_campos_completos_falla" />
         <item itemvalue="Python tests.Python tests for test_inscripcion_actividades.test_inscribir_actividad_mas_de_dos_dias_antes_falla" />
@@ -226,21 +180,6 @@
     <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
-    <option name="RECENT_FILTERS">
-      <map>
-        <entry key="Branch">
-          <value>
-            <list>
-              <RecentGroup>
-                <option name="FILTER_VALUES">
-                  <option value="main" />
-                </option>
-              </RecentGroup>
-            </list>
-          </value>
-        </entry>
-      </map>
-    </option>
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
@@ -263,6 +202,21 @@
                 </map>
               </option>
             </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="main" />
+                </option>
+              </RecentGroup>
+            </list>
           </value>
         </entry>
       </map>
