@@ -256,14 +256,6 @@ class DialogoPersona(QDialog):
                 "El DNI debe contener solo números.",
             )
             return
-        if len(dni_txt) < 7:
-            QMessageBox.warning(
-                self,
-                "Formato inválido",
-                "El DNI debe tener al menos 7 dígitos.",
-            )
-            return
-
         if not edad_txt.isdigit():
             QMessageBox.warning(
                 self,
